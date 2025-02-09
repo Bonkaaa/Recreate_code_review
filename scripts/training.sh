@@ -1,6 +1,6 @@
 #!/bin/bash
 PROJECT="repo-specific"
-DataDir="$1"
+DataDir="/kaggle/input/dataaa/t5_data"
 
 # TYPE='roberta'
 # MODEL='microsoft/codebert-base'
