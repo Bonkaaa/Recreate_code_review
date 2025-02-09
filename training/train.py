@@ -242,7 +242,7 @@ def main(args):
     eval_set_loader = DataLoader(eval_data, batch_size=args.eval_batch_size, shuffle=False, collate_fn=data_collator)
 
     #Training
-    results = train(args, model, train_set_loader, eval_set_loader, tokenizer, accelerator)
+    results = train(args, train_set_loader, eval_set_loader, model, tokenizer, accelerator)
 
     return results
 
