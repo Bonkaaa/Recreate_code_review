@@ -196,7 +196,7 @@ def main(args):
             "seed" : args.seed,
             "fp16" : args.fp16,
         },
-        init_kwargs={"wandb": {"entity": "Kien-HUST-MI2"}}
+        init_kwargs={"wandb": {"entity": "bonkaa-org"}}
     )
 
     seed_torch(args.seed)
