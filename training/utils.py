@@ -32,29 +32,14 @@ logging.basicConfig(
 
 
 def load_jsonl(file_path):
-    code_tokens = []
-    docstring_tokens = []
+    """
+    Load a JSON Lines (JSONL) file and return its content as a list of dictionaries.
 
-    # Extract data
-    with open(file_path) as file:
-        for line in file:
-            try:
-                data = json.loads(line)
-                code_tokens.append(data['code_tokens'])
-                docstring_tokens.append(data['docstring_tokens'])
-            except json.decoder.JSONDecodeError:
-                print(line)
-
-    # Convert into dataframe
-    dicts = {'Code_tokens': code_tokens, 'Docstring_tokens': docstring_tokens}
-    df = pd.DataFrame(dicts)
-    df_new = df.dropna()
-
-    # Change the data types
-    df_new['Code_tokens'] = df_new['Code_tokens'].astype("string")
-    df_new['Docstring_tokens'] = df_new['Docstring_tokens'].astype("string")
-
-    return df_new
+    :param file_path: Path to the JSON Lines file.
+    :return: List of dictionaries (or other JSON-parsable objects).
+    """
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return [json.loads(line.strip()) for line in file if line.strip()]
 
 
 def dump_jsonl(data, file_path):

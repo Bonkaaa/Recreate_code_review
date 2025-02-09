@@ -4,12 +4,12 @@ from torch.utils.data import DataLoader
 from torch.optim import AdamW
 from tqdm.auto import tqdm
 from transformers import get_linear_schedule_with_warmup, T5ForConditionalGeneration
+from datasets import Dataset, DatasetDict, load_from_disk
 from evaluating import evaluate
 from transformers import DataCollatorWithPadding
 from accelerate import Accelerator
 from checkpoint import save_checkpoint, load_checkpoint
 import numpy as np
-
 
 
 def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator):
@@ -32,7 +32,6 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=num_warmup,
                                                 num_training_steps=args.max_steps)
     criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
-
 
     global_step = args.start_step
     tr_loss, logging_loss, avg_loss, tr_nb, tr_num, train_loss = 0.0, 0.0, 0.0, 0, 0, 0
@@ -68,7 +67,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
 
                 model.train()
 
-                outputs  = model(in_ids, in_masks, target_ids)
+                outputs = model(in_ids, in_masks, target_ids)
 
                 loss = criterion(outputs.logits.view(-1, outputs.logits.size(-1)), target_ids.view(-1))
 
@@ -129,7 +128,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
             if accelerator.is_main_process:
                 for key, value in results.items():
                     logging.info("  %s = %s", key, round(value, 4))
-            valid_loss, valid_bleu_score= results.values()
+            valid_loss, valid_bleu_score = results.values()
 
             accelerator.log({
                 'Loss/train-per-epoch': avg_loss,
@@ -174,29 +173,30 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
 
     return results
 
+
 def main(args):
     accelerator = Accelerator(gradient_accumulation_steps=args.gradient_accumulation_steps, log_with="wandb")
 
     accelerator.init_trackers(
         project_name=args.project,
-        config = {
-            "learning_rate" : args.leraning_rate,
-            "train_batch_size" : args.train_batch_size,
-            "eval_batch_size" : args.eval_batch_size,
-            "gradient_accumulation_steps" : args.gradient_accumulation_steps,
-            "adam_epsilon" : args.adam_epsilon,
-            "num_train_epochs" : args.num_train_epochs,
-            "warmup_steps" : args.warmup_steps,
-            "warmup_ratio" : args.warmup_ratio,
-            "max_patience" : args.max_patience,
-            "max_grad_norm" : args.max_grad_norm,
-            "logging_steps" : args.logging_steps,
-            "save_steps" : args.save_steps,
-            "weight_decay" : args.weight_decay,
-            "seed" : args.seed,
-            "fp16" : args.fp16,
+        config={
+            "learning_rate": args.learning_rate,
+            "train_batch_size": args.train_batch_size,
+            "eval_batch_size": args.eval_batch_size,
+            "gradient_accumulation_steps": args.gradient_accumulation_steps,
+            "adam_epsilon": args.adam_epsilon,
+            "num_train_epochs": args.num_train_epochs,
+            "warmup_steps": args.warmup_steps,
+            "warmup_ratio": args.warmup_ratio,
+            "max_patience": args.max_patience,
+            "max_grad_norm": args.max_grad_norm,
+            "logging_steps": args.logging_steps,
+            "save_steps": args.save_steps,
+            "weight_decay": args.weight_decay,
+            "seed": args.seed,
+            "fp16": args.fp16,
         },
-        init_kwargs={"wandb": {"entity": "Kien-HUST-MI2"}}
+        init_kwargs={"wandb": {"entity": "bonkaa"}}
     )
 
     seed_torch(args.seed)
@@ -207,13 +207,15 @@ def main(args):
         logging.debug(model_class)
         logging.debug(tokenizer_class)
 
-    config = config_class.from_pretrained(args.config_name if args.config_name else args.model_name_or_path, cache_dir=args.cache_dir if args.cache_dir else None)
+    config = config_class.from_pretrained(args.config_name if args.config_name else args.model_name_or_path,
+                                          cache_dir=args.cache_dir if args.cache_dir else None)
     config.num_labels = 2
 
     if accelerator.is_main_process:
         logging.debug(config)
 
-    tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case, cache_dir=args.cache_dir if args.cache_dir else None)
+    tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case,
+                                                cache_dir=args.cache_dir if args.cache_dir else None)
 
     if tokenizer.pad_token == None:
         tokenizer.pad_token = (tokenizer.eos_token)
@@ -223,34 +225,83 @@ def main(args):
         args.block_size = tokenizer.max_len_single_sentence  # Our input block size will be the max possible for the model
     args.block_size = min(args.block_size, tokenizer.max_len_single_sentence)
 
-    model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)    #Change this to choose another model for evaluating
+    model = T5ForConditionalGeneration.from_pretrained(
+        args.model_name_or_path)  # Change this to choose another model for evaluating
 
     if accelerator.is_main_process:
         logging.debug(model)
 
-    #Load data
+    # Load data
     train_data = load_jsonl(args.train_data_file)
     eval_data = load_jsonl(args.eval_data_file)
     if accelerator.is_main_process:
         logging.info(f"Total train data: {len(train_data)}")
         logging.info(f"Total validate data: {len(eval_data)}")
 
-    #Dataloader
-    data_collator = DataCollatorWithPadding(tokenizer = tokenizer)
+    # Convert to Dataset objects
+    train_dataset = Dataset.from_list(train_data)
+    val_dataset = Dataset.from_list(eval_data)
 
-    train_set_loader = DataLoader(train_data, batch_size=args.train_batch_size, shuffle=True, collate_fn=data_collator)
-    eval_set_loader = DataLoader(eval_data, batch_size=args.eval_batch_size, shuffle=False, collate_fn=data_collator)
+    # Tokenize function
+    def tokenize_example(example):
+        example["code_tokens"] = tokenizer(
+            example["code_tokens"],
+            padding=True,
+            truncation=True,
+            max_length=args.block_size
+        )
 
-    #Training
-    results = train(args, model, train_set_loader, eval_set_loader, tokenizer, accelerator)
+        example["docstring_tokens"] = tokenizer(
+            example["docstring_tokens"],
+            padding=True,
+            truncation=True,
+            max_length=args.block_size
+        )
+
+        return example
+
+    # Tokenize datasets
+    tokenized_train_path = "./tokenized_dataset/train"
+    if os.path.exists(tokenized_train_path):
+        tokenized_train_dataset = load_from_disk(tokenized_train_path)
+    else:
+        tokenized_train_dataset = train_dataset.map(tokenize_example, batched=True, num_proc=args.num_proc)
+        tokenized_train_dataset.save_to_disk(tokenized_train_path)
+    tokenized_train_dataset.set_format("torch")
+
+    tokenized_val_path = "./tokenized_dataset/val"
+    if os.path.exists(tokenized_val_path):
+        tokenized_val_dataset = load_from_disk(tokenized_val_path)
+    else:
+        tokenized_val_dataset = val_dataset.map(tokenize_example, batched=True, num_proc=args.num_proc)
+
+        tokenized_val_dataset.save_to_disk(tokenized_val_path)
+    tokenized_val_dataset.set_format("torch")
+
+    # Combine datasets into DatasetDict
+    tokenized_datasets = DatasetDict({
+        "train": tokenized_train_dataset,
+        "validation": tokenized_val_dataset
+    })
+
+    # DataLoader
+    data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+
+    train_dataloader = DataLoader(
+        tokenized_datasets["train"], shuffle=True, batch_size=args.train_batch_size, collate_fn=data_collator
+    )
+    eval_dataloader = DataLoader(
+        tokenized_datasets["validation"], batch_size=args.train_batch_size, collate_fn=data_collator
+    )
+
+    # Training
+    results = train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator)
 
     return results
+
 
 if __name__ == '__main__':
     args = args_parse()
     args.start_epoch = 0
     args.start_step = 0
     main(args)
-
-
-
