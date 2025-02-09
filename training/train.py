@@ -241,11 +241,11 @@ def main(args):
 
     # Tokenize function
     def tokenize_code(example):
-        code = example["code"]
+        code = example['Code_tokens']
         return tokenizer(code, padding=True, truncation=True, max_length=args.block_size)
 
     def tokenize_docstring(example):
-        code = example["docstring"]
+        code = example['Docstring_tokens']
         return tokenizer(code, padding=True, truncation=True, max_length=args.block_size)
 
     # Tokenize datasets
