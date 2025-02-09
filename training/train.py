@@ -180,7 +180,7 @@ def main(args):
     accelerator.init_trackers(
         project_name=args.project,
         config = {
-            "learning_rate" : args.leraning_rate,
+            "learning_rate" : args.learning_rate,
             "train_batch_size" : args.train_batch_size,
             "eval_batch_size" : args.eval_batch_size,
             "gradient_accumulation_steps" : args.gradient_accumulation_steps,
