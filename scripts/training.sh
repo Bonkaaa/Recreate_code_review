@@ -22,7 +22,7 @@ OUTPUT_DIR=./outputs/codet5
 # TOKENIZER='microsoft/unixcoder-base'
 # OUTPUT_DIR=./outputs/unixcoder
 
-accelerate launch train.py \
+CUDA_VISIBLE_DEVICES=0,1 accelerate launch train.py \
     --project ${PROJECT} \
     --model_dir ${MODEL} \
     --output_dir=${OUTPUT_DIR} \
