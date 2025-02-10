@@ -239,6 +239,15 @@ def main(args):
         logging.info(f"Total train data: {len(train_data)}")
         logging.info(f"Total validate data: {len(eval_data)}")
 
+    # Process the list
+    for entry in train_data:
+        entry["code"] = " ".join(entry["code_tokens"])  # Concatenate code tokens
+        entry["docstring"] = " ".join(entry["docstring_tokens"])  # Concatenate docstring tokens
+
+    for entry in eval_data:
+        entry["code"] = " ".join(entry["code_tokens"])  # Concatenate code tokens
+        entry["docstring"] = " ".join(entry["docstring_tokens"])  # Concatenate docstring tokens
+
     # Convert to Dataset objects
     train_dataset = Dataset.from_list(train_data)
     val_dataset = Dataset.from_list(eval_data)
@@ -259,7 +268,6 @@ def main(args):
             truncation=True,
             max_length=args.block_size
         )
-
 
     # Tokenize datasets
     tokenized_train_path = "./tokenized_dataset/train"
