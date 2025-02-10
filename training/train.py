@@ -238,11 +238,6 @@ def main(args):
     if accelerator.is_main_process:
         logging.info(f"Total train data: {len(train_data)}")
         logging.info(f"Total validate data: {len(eval_data)}")
-        
-    # Convert to Dataset objects
-    train_dataset = Dataset.from_list(train_data)
-    val_dataset = Dataset.from_list(eval_data)
-
 
     # Convert to Dataset objects
     train_dataset = Dataset.from_list(train_data)
@@ -302,54 +297,6 @@ def main(args):
 
     # Training
     results = train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator)
-
-    # Tokenize function
-    def tokenize_code(example):
-        code = example['Code_tokens']
-        return tokenizer(code, padding=True, truncation=True, max_length=args.block_size)
-
-    def tokenize_docstring(example):
-        code = example['Docstring_tokens']
-        return tokenizer(code, padding=True, truncation=True, max_length=args.block_size)
-
-    # Tokenize datasets
-    tokenized_train_path = "./tokenized_dataset/train"
-    if os.path.exists(tokenized_train_path):
-        tokenized_train_dataset = load_from_disk(tokenized_train_path)
-    else:
-        tokenized_train_dataset = train_dataset.map(tokenize_code, batched=True, num_proc=args.num_proc)
-        tokenized_train_dataset = train_dataset.map(tokenize_docstring, batched=True, num_proc=args.num_proc)
-        tokenized_train_dataset.save_to_disk(tokenized_train_path)
-    tokenized_train_dataset.set_format("torch")
-    
-    tokenized_val_path = "./tokenized_dataset/val"
-    if os.path.exists(tokenized_val_path):
-        tokenized_val_dataset = load_from_disk(tokenized_val_path)
-    else:
-        tokenized_val_dataset = val_dataset.map(tokenize_code, batched=True, num_proc=args.num_proc)
-        tokenized_val_dataset = val_dataset.map(tokenize_docstring, batched=True, num_proc=args.num_proc)
-        tokenized_val_dataset.save_to_disk(tokenized_val_path)
-    tokenized_val_dataset.set_format("torch")
-
-    # Combine datasets into DatasetDict
-    tokenized_datasets = DatasetDict({
-        "train": tokenized_train_dataset,
-        "validation": tokenized_val_dataset
-    })
-
-    # DataLoader
-    data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
-    
-    train_dataloader = DataLoader(
-        tokenized_datasets["train"], shuffle=True, batch_size=args.train_batch_size, collate_fn=data_collator
-    )
-    eval_dataloader = DataLoader(
-        tokenized_datasets["validation"], batch_size=args.train_batch_size, collate_fn=data_collator
-    )
-
-    #Training
-    results = train(args, train_set_loader, eval_set_loader, model, tokenizer, accelerator)
-
 
     return results
 
