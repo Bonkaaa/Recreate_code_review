@@ -41,4 +41,4 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch train.py \
     --max_grad_norm 1.0 \
     --wandb_name ${MODEL} \
     --evaluate_during_training \
-    --num_proc 128
+    --num_proc 1
