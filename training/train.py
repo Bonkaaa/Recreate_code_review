@@ -245,21 +245,21 @@ def main(args):
 
     # Tokenize function
     def tokenize_code(example):
-        example["code_tokens"] = tokenizer(
+        return tokenizer(
             example["code_tokens"],
             padding=True,
             truncation=True,
             max_length=args.block_size
         )
-        return example
 
     def tokenize_docstring(example):
-        example["docstring_tokens"] = tokenizer(
+        return tokenizer(
             example["docstring_tokens"],
             padding=True,
             truncation=True,
             max_length=args.block_size
         )
+
 
     # Tokenize datasets
     tokenized_train_path = "./tokenized_dataset/train"
