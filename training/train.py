@@ -61,8 +61,8 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
 
         for _, batch in enumerate(bar):
             with accelerator.accumulate(model):
-                in_ids = batch['source_ids'].to(args.device)
-                in_masks = batch['source_mask'].to(args.device)
+                in_ids = batch['input_ids'].to(args.device)
+                in_masks = batch['code_attention_mask'].to(args.device)
                 target_ids = batch['target_ids'].to(args.device)
 
                 model.train()
@@ -241,18 +241,18 @@ def main(args):
 
     # Process the list
     for entry in train_data:
-        entry["code"] = " ".join(entry["code_tokens"])  # Concatenate code tokens
-        entry["docstring"] = " ".join(entry["docstring_tokens"])  # Concatenate docstring tokens
+        entry["code_tokens"] = " ".join(entry["code_tokens"])  # Concatenate code tokens
+        entry["docstring_tokens"] = " ".join(entry["docstring_tokens"])  # Concatenate docstring tokens
 
     for entry in eval_data:
-        entry["code"] = " ".join(entry["code_tokens"])  # Concatenate code tokens
-        entry["docstring"] = " ".join(entry["docstring_tokens"])  # Concatenate docstring tokens
+        entry["code_tokens"] = " ".join(entry["code_tokens"])  # Concatenate code tokens
+        entry["docstring_tokens"] = " ".join(entry["docstring_tokens"])  # Concatenate docstring tokens
 
     # Convert to Dataset objects
     train_dataset = Dataset.from_list(train_data)
     val_dataset = Dataset.from_list(eval_data)
 
-    # Tokenize function
+    # # Tokenize function
     def tokenize_code(example):
         code = example["code_tokens"]
         return tokenizer(
@@ -270,14 +270,21 @@ def main(args):
             truncation=True,
             max_length=args.block_size
         )
-
+        
     # Tokenize datasets
     tokenized_train_path = "./tokenized_dataset/train"
     if os.path.exists(tokenized_train_path):
         tokenized_train_dataset = load_from_disk(tokenized_train_path)
     else:
         tokenized_train_dataset = train_dataset.map(tokenize_code, batched=True, num_proc=args.num_proc)
+        tokenized_train_dataset = tokenized_train_dataset.rename_column('input_ids', 'code_ids')
+        tokenized_train_dataset = tokenized_train_dataset.rename_column('attention_mask', 'code_attention_mask')
         tokenized_train_dataset = tokenized_train_dataset.map(tokenize_docstring, batched=True, num_proc=args.num_proc)
+        tokenized_train_dataset = tokenized_train_dataset.rename_column('input_ids', 'docs_ids')
+        tokenized_train_dataset = tokenized_train_dataset.rename_column('attention_mask', 'docs_attention_mask')
+        tokenized_train_dataset = tokenized_train_dataset.remove_columns(['code_tokens', 'docstring_tokens'])
+        tokenized_train_dataset = tokenized_train_dataset.rename_column('code_ids', 'input_ids')
+        tokenized_train_dataset = tokenized_train_dataset.rename_column('docs_ids', 'target_ids')
         tokenized_train_dataset.save_to_disk(tokenized_train_path)
     tokenized_train_dataset.set_format("torch")
 
@@ -286,10 +293,20 @@ def main(args):
         tokenized_val_dataset = load_from_disk(tokenized_val_path)
     else:
         tokenized_val_dataset = val_dataset.map(tokenize_code, batched=True, num_proc=args.num_proc)
+        tokenized_val_dataset = tokenized_val_dataset.rename_column('input_ids', 'code_ids')
+        tokenized_val_dataset = tokenized_val_dataset.rename_column('attention_mask', 'code_attention_mask')
         tokenized_val_dataset = tokenized_val_dataset.map(tokenize_docstring, batched=True, num_proc=args.num_proc)
-
+        tokenized_val_dataset = tokenized_val_dataset.rename_column('input_ids', 'docs_ids')
+        tokenized_val_dataset = tokenized_val_dataset.rename_column('attention_mask', 'docs_attention_mask')
+        tokenized_val_dataset = tokenized_val_dataset.remove_columns(['code_tokens', 'docstring_tokens'])
+        tokenized_val_dataset = tokenized_val_dataset.rename_column('code_ids', 'input_ids')
+        tokenized_val_dataset = tokenized_val_dataset.rename_column('docs_ids', 'target_ids')
         tokenized_val_dataset.save_to_disk(tokenized_val_path)
     tokenized_val_dataset.set_format("torch")
+    
+    if accelerator.is_main_process:
+        logging.info(tokenized_train_dataset)
+        logging.info(tokenized_val_dataset)
 
     # Combine datasets into DatasetDict
     tokenized_datasets = DatasetDict({
@@ -304,7 +321,7 @@ def main(args):
         tokenized_datasets["train"], shuffle=True, batch_size=args.train_batch_size, collate_fn=data_collator
     )
     eval_dataloader = DataLoader(
-        tokenized_datasets["validation"], batch_size=args.train_batch_size, collate_fn=data_collator
+        tokenized_datasets["validation"], batch_size=args.eval_batch_size, collate_fn=data_collator
     )
 
     # Training
