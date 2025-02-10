@@ -245,7 +245,7 @@ def main(args):
 
     # Tokenize function
     def tokenize_code(example):
-        code = ' '.joins(example["code_tokens"])
+        code = ' '.join(example["code_tokens"])
         return tokenizer(
             code,
             padding=True,
@@ -254,7 +254,7 @@ def main(args):
         )
 
     def tokenize_docstring(example):
-        docstring_tokens = ' '.joins(example["docstring_tokens"])
+        docstring_tokens = ' '.join(example["docstring_tokens"])
         return tokenizer(
             docstring_tokens,
             padding=True,
