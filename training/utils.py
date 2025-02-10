@@ -6,9 +6,9 @@ import numpy as np
 import torch
 import pandas as pd
 from datetime import datetime
-from transformers import (BertConfig, BertForMaskedLM, BertTokenizer)
-from transformers import (T5Config, T5ForConditionalGeneration)
-from transformers import (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer)
+from transformers import BertConfig, BertForMaskedLM, BertTokenizer
+from transformers import T5Config, T5ForConditionalGeneration
+from transformers import RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer
 
 MODEL_CLASSES = {
     'codet5': (T5Config, T5ForConditionalGeneration, RobertaTokenizer),
