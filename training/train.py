@@ -244,14 +244,16 @@ def main(args):
     val_dataset = Dataset.from_list(eval_data)
 
     # Tokenize function
-    def tokenize_example(example):
+    def tokenize_code(example):
         example["code_tokens"] = tokenizer(
             example["code_tokens"],
             padding=True,
             truncation=True,
             max_length=args.block_size
         )
+        return example
 
+    def tokenize_docstring(example):
         example["docstring_tokens"] = tokenizer(
             example["docstring_tokens"],
             padding=True,
@@ -259,14 +261,13 @@ def main(args):
             max_length=args.block_size
         )
 
-        return example
-
     # Tokenize datasets
     tokenized_train_path = "./tokenized_dataset/train"
     if os.path.exists(tokenized_train_path):
         tokenized_train_dataset = load_from_disk(tokenized_train_path)
     else:
-        tokenized_train_dataset = train_dataset.map(tokenize_example, batched=True, num_proc=args.num_proc)
+        tokenized_train_dataset = train_dataset.map(tokenize_code, batched=True, num_proc=args.num_proc)
+        tokenized_train_dataset = tokenized_train_dataset.map(tokenize_docstring, batched=True, num_proc=args.num_proc)
         tokenized_train_dataset.save_to_disk(tokenized_train_path)
     tokenized_train_dataset.set_format("torch")
 
@@ -274,7 +275,8 @@ def main(args):
     if os.path.exists(tokenized_val_path):
         tokenized_val_dataset = load_from_disk(tokenized_val_path)
     else:
-        tokenized_val_dataset = val_dataset.map(tokenize_example, batched=True, num_proc=args.num_proc)
+        tokenized_val_dataset = val_dataset.map(tokenize_code, batched=True, num_proc=args.num_proc)
+        tokenized_val_dataset = tokenized_val_dataset.map(tokenize_docstring, batched=True, num_proc=args.num_proc)
 
         tokenized_val_dataset.save_to_disk(tokenized_val_path)
     tokenized_val_dataset.set_format("torch")
