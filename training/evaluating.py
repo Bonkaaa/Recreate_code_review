@@ -21,19 +21,22 @@ def evaluate(args, model, eval_dataloader, tokenizer, accelerator=None):
     all_bleu_score = []
     model.eval()
 
-    for batch in tqdm(eval_dataloader, desc="Evluating:", disable=not accelerator.is_local_main_process):
+    for batch in tqdm(eval_dataloader, desc="Evaluating:", disable=not accelerator.is_local_main_process):
         in_ids = batch['input_ids'].to(args.device)
         in_masks = batch['code_attention_mask'].to(args.device)
         target_ids = batch['target_ids'].to(args.device)
         with torch.no_grad():
 
-            #calculate loss
-            loss = model(in_ids, in_masks, target_ids)
+            #forward
+            outputs = model(in_ids, in_masks, target_ids)
+
+            #Compute loss
+            loss = torch.nn.CrossEntropyLoss(outputs.logits.view(-1, outputs.logits.size(-1)), target_ids.view(-1))
 
             if accelerator:
                 loss = accelerator.gather(loss)
 
-            eval_loss += loss.mean().item()
+            eval_loss += loss.item()
 
             # generate comments
             generate_ids = model.generate(
