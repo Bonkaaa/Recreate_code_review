@@ -22,8 +22,8 @@ def evaluate(args, model, eval_dataloader, tokenizer, accelerator=None):
     model.eval()
 
     for batch in tqdm(eval_dataloader, desc="Evluating:", disable=not accelerator.is_local_main_process):
-        in_ids = batch['source_ids'].to(args.device)
-        in_masks = batch['source_mask'].to(args.device)
+        in_ids = batch['input_ids'].to(args.device)
+        in_masks = batch['code_attention_mask'].to(args.device)
         target_ids = batch['target_ids'].to(args.device)
         with torch.no_grad():
 
