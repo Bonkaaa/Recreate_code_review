@@ -37,10 +37,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
             if accelerator:
                 loss = accelerator.gather(loss)
 
-            #Convert from object dtype to float dtype
-            loss_converted = torch.tensor(list(map(float, loss.item())))
-
-            eval_loss += loss_converted.mean()
+            eval_loss += loss.mean().item()
 
             # generate comments
             generate_ids = model.generate(
