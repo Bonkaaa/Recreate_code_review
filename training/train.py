@@ -96,7 +96,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                 if (step + 1) % args.logging_steps == 0:
                     avg_loss = round(train_loss / tr_num, 5)
                     if args.evaluate_during_training:
-                        results = evaluate(args, model, eval_dataloader, tokenizer, accelerator)
+                        results = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
                         if accelerator.is_main_process:
                             for key, value in results.items():
                                 logging.info("  %s = %s", key, round(value, 4))
@@ -124,7 +124,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
         avg_loss = round(train_loss / tr_num, 5)
 
         if args.evaluate_during_training:  # Only evaluate when single GPU otherwise metrics may not average well
-            results = evaluate(args, model, eval_dataloader, tokenizer, accelerator)
+            results = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
             if accelerator.is_main_process:
                 for key, value in results.items():
                     logging.info("  %s = %s", key, round(value, 4))
@@ -163,7 +163,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
     results = {}
     if args.do_eval:
         load_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
-        result = evaluate(args, model, eval_dataloader, tokenizer, accelerator)
+        result = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
         if accelerator.is_main_process:
             logging.info("***** Eval results *****")
             for key in sorted(result.keys()):

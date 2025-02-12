@@ -1,12 +1,13 @@
-from utils import logging
+from utils import *
 import os
 import torch
 import numpy as np
 from metrics import calculate_metrics
 from tqdm.auto import tqdm
+from args_parse import *
 
 
-def evaluate(args, model, eval_dataloader, tokenizer, accelerator=None):
+def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=None):
     eval_output_dir = args.output_dir
     if not os.path.exists(eval_output_dir):
         os.makedirs(eval_output_dir)
@@ -31,7 +32,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, accelerator=None):
             outputs = model(in_ids, in_masks, target_ids)
 
             #Compute loss
-            loss = torch.nn.CrossEntropyLoss(outputs.logits.view(-1, outputs.logits.size(-1)), target_ids.view(-1))
+            loss = criterion(outputs.logits.view(-1, outputs.logits.size(-1)), target_ids.view(-1))
 
             if accelerator:
                 loss = accelerator.gather(loss)
