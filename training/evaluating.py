@@ -40,7 +40,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
             eval_loss += loss.mean().item()
 
             # generate comments
-            generate_ids = model.generate(
+            generate_ids = model.module.generate(
                 input_ids=in_ids,
                 attention_mask=in_masks,
                 max_length=512,
