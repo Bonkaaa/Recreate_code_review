@@ -92,7 +92,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                     logging_loss = tr_loss
                     tr_nb = global_step
 
-                # log after every logging_steps (e.g., 1000)
+                # log after every logging_steps (e.g., 20000)
                 if (step + 1) % args.logging_steps == 0:
                     avg_loss = round(train_loss / tr_num, 5)
                     if args.evaluate_during_training:
@@ -136,8 +136,8 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                 'Bleu_score/valid-per-1000-steps': valid_bleu_score,
             }, step=step)
 
-            # save model checkpoint at ep10
-            if idx == 9:
+            # save model checkpoint at ep2
+            if idx == 1:
                 save_checkpoint(args, accelerator, f'checkpoint-epoch-{idx + 1}')
 
             # Save model checkpoint

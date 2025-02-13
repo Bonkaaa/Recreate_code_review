@@ -63,7 +63,7 @@ def main():
     parser.add_argument("--warmup_ratio", default=0.1, type=float, help="Linear warmup ratio over all steps.")
     parser.add_argument("--test_size", default=0.05, type=float, help="Linear warmup ratio over all steps.")
 
-    parser.add_argument('--logging_steps', type=int, default=1000, help="Log every X updates steps.")
+    parser.add_argument('--logging_steps', type=int, default=20000, help="Log every X updates steps.")
     parser.add_argument('--save_steps', type=int, default=50, help="Save checkpoint every X updates steps.")
     parser.add_argument('--save_total_limit', type=int, default=None,
                         help='Limit the total amount of checkpoints, delete the older checkpoints in the output_dir, does not delete by default')

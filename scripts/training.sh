@@ -31,11 +31,11 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch train.py \
     --model_name_or_path=${MODEL} \
     --train_data_file=${DataDir}"/train.jsonl" \
     --eval_data_file=${DataDir}"/val.jsonl" \
-    --epoch 3 \
+    --epoch 2 \
     --do_eval \
     --block_size 512 \
-    --train_batch_size 1 \
-    --eval_batch_size 1 \
+    --train_batch_size 2 \
+    --eval_batch_size 2 \
     --learning_rate 2e-5 \
     --warmup_steps 1000 \
     --max_grad_norm 1.0 \
