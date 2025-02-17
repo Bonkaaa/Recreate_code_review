@@ -33,7 +33,7 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch train.py \
     --eval_data_file=${DataDir}"/val.jsonl" \
     --epoch 2 \
     --do_eval \
-    --block_size 512 \
+    --block_size 256 \
     --train_batch_size 1 \
     --eval_batch_size 1 \
     --learning_rate 2e-5 \
