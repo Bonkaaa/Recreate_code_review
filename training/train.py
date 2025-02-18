@@ -99,30 +99,30 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                     logging_loss = tr_loss
                     tr_nb = global_step
 
-                # log after every logging_steps (e.g., 20000)
-                if (step + 1) % args.logging_steps == 0:
-                    avg_loss = round(train_loss / tr_num, 5)
-                    if args.evaluate_during_training:
-                        results = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
-                        if accelerator.is_main_process:
-                            for key, value in results.items():
-                                logging.info("  %s = %s", key, round(value, 4))
-                        valid_loss, valid_bleu_score = results.values()
-
-                        accelerator.log({
-                            'Loss/train-per-1000-steps': avg_loss,
-                            'Loss/valid-per-1000-steps': valid_loss,
-                            'Bleu_score/valid-per-1000-steps': valid_bleu_score,
-                        }, step=step)
-
-                        # Save model checkpoint
-                        if results['eval_bleu_score'] > best_bleu_score:
-                            best_bleu_score = results['eval_bleu_score']
-                            if accelerator.is_main_process:
-                                logging.info("  " + "*" * 20)
-                                logging.info("  Best bleu score:%s", round(best_bleu_score, 4))
-                                logging.info("  " + "*" * 20)
-                            save_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
+                # # log after every logging_steps (e.g., 20000)
+                # if (step + 1) % args.logging_steps == 0:
+                #     avg_loss = round(train_loss / tr_num, 5)
+                #     if args.evaluate_during_training:
+                #         results = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
+                #         if accelerator.is_main_process:
+                #             for key, value in results.items():
+                #                 logging.info("  %s = %s", key, round(value, 4))
+                #         valid_loss, valid_bleu_score = results.values()
+                #
+                #         accelerator.log({
+                #             'Loss/train-per-1000-steps': avg_loss,
+                #             'Loss/valid-per-1000-steps': valid_loss,
+                #             'Bleu_score/valid-per-1000-steps': valid_bleu_score,
+                #         }, step=step)
+                #
+                #         # Save model checkpoint
+                #         if results['eval_bleu_score'] > best_bleu_score:
+                #             best_bleu_score = results['eval_bleu_score']
+                #             if accelerator.is_main_process:
+                #                 logging.info("  " + "*" * 20)
+                #                 logging.info("  Best bleu score:%s", round(best_bleu_score, 4))
+                #                 logging.info("  " + "*" * 20)
+                #             save_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
 
                 # increment step within the same epoch
                 step += 1
