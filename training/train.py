@@ -205,7 +205,7 @@ def main(args):
     tracker = MyCustomTracker(
         project_name=args.project,
         run_name=args.model_type,
-        entity="manh-td120901-singapore-management-university",      
+        entity="bonkaa",
         config={ 
             "learning_rate": args.learning_rate,
             "train_batch_size": args.train_batch_size,
