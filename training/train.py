@@ -10,7 +10,14 @@ from transformers import DataCollatorWithPadding
 from accelerate import Accelerator
 from checkpoint import save_checkpoint, load_checkpoint
 import numpy as np
+import wandb
+from typing import Optional
+from accelerate.tracking import GeneralTracker
+from pathlib import Path
+from dotenv import load_dotenv
 
+dotenv_path = Path('./.env')
+load_dotenv(dotenv_path=dotenv_path)
 
 def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator):
     # Setup
@@ -174,13 +181,32 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
     return results
 
 
+class MyCustomTracker(GeneralTracker):
+    def __init__(self, project_name: str, run_name: str, config: dict = {},entity: str = "manh-td120901-singapore-management-university"):
+        self.project_name = project_name
+        self.run_name = run_name
+        self.entity = entity
+        self.config = config
+        wandb.login(key=os.getenv("WANDB_API_KEY"))
+        wandb.init(
+            project=self.project_name,
+            entity=self.entity,
+            name=self.run_name,
+            config=self.config
+        )
+
+    def store_init_configuration(self, values: dict):
+        pass
+
+    def log(self, values: dict, step: Optional[int] = None):
+        wandb.log(values, step=step)
+
 def main(args):
-    accelerator = Accelerator(gradient_accumulation_steps=args.gradient_accumulation_steps, log_with="wandb")
-
-    accelerator.init_trackers(
+    tracker = MyCustomTracker(
         project_name=args.project,
-
-        config={
+        run_name=args.model_type,
+        entity="manh-td120901-singapore-management-university",      
+        config={ 
             "learning_rate": args.learning_rate,
             "train_batch_size": args.train_batch_size,
             "eval_batch_size": args.eval_batch_size,
@@ -196,9 +222,10 @@ def main(args):
             "weight_decay": args.weight_decay,
             "seed": args.seed,
             "fp16": args.fp16,
-        },
-        init_kwargs={"wandb": {"entity": "bonkaa"}}
+        }            
     )
+    accelerator = Accelerator(gradient_accumulation_steps=args.gradient_accumulation_steps, log_with=tracker)
+    accelerator.init_trackers(project_name=args.project)
 
     seed_torch(args.seed)
 
