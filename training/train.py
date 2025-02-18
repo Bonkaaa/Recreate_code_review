@@ -284,7 +284,7 @@ def main(args):
         code = example["code_tokens"]
         return tokenizer(
             code,
-            padding=args.block_size,
+            padding='max_length',
             truncation=True,
             max_length=args.block_size
         )
@@ -293,7 +293,7 @@ def main(args):
         docstring_tokens = example["docstring_tokens"]
         return tokenizer(
             docstring_tokens,
-            padding=args.block_size,
+            padding='max_length',
             truncation=True,
             max_length=args.block_size
         )
