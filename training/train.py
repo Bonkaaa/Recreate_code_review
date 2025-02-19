@@ -187,6 +187,7 @@ class MyCustomTracker(GeneralTracker):
         self.run_name = run_name
         self.entity = entity
         self.config = config
+        self.name = "wandb"
         wandb.login(key=os.getenv("WANDB_API_KEY"))
         wandb.init(
             project=self.project_name,
