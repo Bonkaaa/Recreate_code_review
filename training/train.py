@@ -99,7 +99,11 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                     logging_loss = tr_loss
                     tr_nb = global_step
 
+<<<<<<< HEAD
                 # # log after every logging_steps (e.g., 5000)
+=======
+                # # log after every logging_steps (e.g., 20000)
+>>>>>>> main
                 # if (step + 1) % args.logging_steps == 0:
                 #     avg_loss = round(train_loss / tr_num, 5)
                 #     if args.evaluate_during_training:
@@ -110,8 +114,13 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                 #         valid_loss, valid_bleu_score = results.values()
                 #
                 #         accelerator.log({
+<<<<<<< HEAD
                 #             'Loss/train-per-5000-steps': avg_loss,
                 #             'Loss/valid-per-5000-steps': valid_loss,
+=======
+                #             'Loss/train-per-1000-steps': avg_loss,
+                #             'Loss/valid-per-1000-steps': valid_loss,
+>>>>>>> main
                 #             'Bleu_score/valid-per-1000-steps': valid_bleu_score,
                 #         }, step=step)
                 #
@@ -205,7 +214,7 @@ def main(args):
     tracker = MyCustomTracker(
         project_name=args.project,
         run_name=args.model_type,
-        entity="manh-td120901-singapore-management-university",      
+        entity="bonkaa",
         config={ 
             "learning_rate": args.learning_rate,
             "train_batch_size": args.train_batch_size,
@@ -284,7 +293,7 @@ def main(args):
         code = example["code_tokens"]
         return tokenizer(
             code,
-            padding=True,
+            padding='max_length',
             truncation=True,
             max_length=args.block_size
         )
@@ -293,7 +302,7 @@ def main(args):
         docstring_tokens = example["docstring_tokens"]
         return tokenizer(
             docstring_tokens,
-            padding=True,
+            padding='max_length',
             truncation=True,
             max_length=args.block_size
         )

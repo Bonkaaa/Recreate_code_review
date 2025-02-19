@@ -1,8 +1,0 @@
-accelerate
-evaluate
-transformers
-datasets
-wandb
-numpy
-scikit-learn
-numexpr
