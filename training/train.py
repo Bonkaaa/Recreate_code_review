@@ -181,25 +181,25 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
     return results
 
 
-class MyCustomTracker(GeneralTracker):
-    def __init__(self, project_name: str, run_name: str, config: dict = {},entity: str = "manh-td120901-singapore-management-university"):
-        self.project_name = project_name
-        self.run_name = run_name
-        self.entity = entity
-        self.config = config
-        wandb.login(key=os.getenv("WANDB_API_KEY"))
-        wandb.init(
-            project=self.project_name,
-            entity=self.entity,
-            name=self.run_name,
-            config=self.config
-        )
-
-    def store_init_configuration(self, values: dict):
-        pass
-
-    def log(self, values: dict, step: Optional[int] = None):
-        wandb.log(values, step=step)
+# class MyCustomTracker(GeneralTracker):
+#     def __init__(self, project_name: str, run_name: str, config: dict = {},entity: str = "manh-td120901-singapore-management-university"):
+#         self.project_name = project_name
+#         self.run_name = run_name
+#         self.entity = entity
+#         self.config = config
+#         wandb.login(key=os.getenv("WANDB_API_KEY"))
+#         wandb.init(
+#             project=self.project_name,
+#             entity=self.entity,
+#             name=self.run_name,
+#             config=self.config
+#         )
+#
+#     def store_init_configuration(self, values: dict):
+#         pass
+#
+#     def log(self, values: dict, step: Optional[int] = None):
+#         wandb.log(values, step=step)
 
 def main(args):
     tracker = MyCustomTracker(
