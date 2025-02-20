@@ -56,7 +56,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
                                                      clean_up_tokenization_spaces=True)
 
             # calculating BLEU score
-            bleu_score = calculate_metrics(generated_comments, actual_comments)
+            bleu_score = calculate_metrics(actual_comments, generated_comments)
 
             all_bleu_score.append(bleu_score)
         nb_eval_steps += 1
