@@ -122,7 +122,7 @@ def is_data_sorted(train_dataset: list, test_dataset: list, date_format="%Y-%m-%
 def split_words_and_symbols(text):
     return re.findall(r"\w+|[^\w\s]", text)
 
-def split_words_and_symbols_for_generated(text):
+def split_words_and_symbols_for_actual(text):
     # First split by sentences (assuming '.' is sentence delimiter)
     sentences = text.split('.')
     # Remove empty sentences and split each sentence into tokens
