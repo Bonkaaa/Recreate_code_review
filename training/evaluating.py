@@ -50,13 +50,16 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
             )
 
             # decode generated and actual comments
-            generated_comments = split_char_by_char(tokenizer.batch_decode(generate_ids, skip_special_tokens=True,
-                                                        clean_up_tokenization_spaces=True))
-            actual_comments = split_char_by_char(tokenizer.batch_decode(target_ids, skip_special_tokens=True,
-                                                     clean_up_tokenization_spaces=True))
+            generated_comments = tokenizer.batch_decode(generate_ids, skip_special_tokens=True,
+                                                        clean_up_tokenization_spaces=True)
+            actual_comments = tokenizer.batch_decode(target_ids, skip_special_tokens=True,
+                                                     clean_up_tokenization_spaces=True)
+
+            generated_comments_split = [split_words_and_symbols(comment) for comment in generated_comments]
+            actual_comments_split = [split_words_and_symbols(comment) for comment in actual_comments]
 
             # calculating BLEU score
-            bleu_score = calculate_metrics(actual_comments, generated_comments)
+            bleu_score = calculate_metrics(actual_comments_split, generated_comments_split)
 
             all_bleu_score.append(bleu_score)
         nb_eval_steps += 1

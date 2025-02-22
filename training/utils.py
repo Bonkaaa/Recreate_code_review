@@ -8,10 +8,7 @@ from datetime import datetime
 from transformers import (BertConfig, BertForMaskedLM, BertTokenizer)
 from transformers import (T5Config, T5ForConditionalGeneration)
 from transformers import (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer)
-import nltk
-from nltk.tokenize import word_tokenize
-
-nltk.download('punkt')
+import re
 
 
 MODEL_CLASSES = {
@@ -122,8 +119,8 @@ def is_data_sorted(train_dataset: list, test_dataset: list, date_format="%Y-%m-%
     logging.info("There is no data leakage in train set")
     return True
 
-def split_char_by_char(text):
-    return word_tokenize(text)
+def split_words_and_symbols(text):
+    return re.findall(r"\w+|[^\w\s]", text)
 
 
 if __name__ == "__main__":
