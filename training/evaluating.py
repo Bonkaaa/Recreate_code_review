@@ -40,7 +40,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
             eval_loss += loss.mean().item()
 
             # generate comments
-            generate_ids = accelerator.unwrap_model(model).generate(
+            generate_ids = model.module.generate(
                 input_ids=in_ids,
                 attention_mask=in_masks,
                 max_length=256,
@@ -50,10 +50,10 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
             )
 
             # decode generated and actual comments
-            generated_comments = tokenizer.batch_decode(generate_ids, skip_special_tokens=True,
-                                                        clean_up_tokenization_spaces=True)
-            actual_comments = tokenizer.batch_decode(target_ids, skip_special_tokens=True,
-                                                     clean_up_tokenization_spaces=True)
+            generated_comments = split_char_by_char(tokenizer.batch_decode(generate_ids, skip_special_tokens=True,
+                                                        clean_up_tokenization_spaces=True))
+            actual_comments = split_char_by_char(tokenizer.batch_decode(target_ids, skip_special_tokens=True,
+                                                     clean_up_tokenization_spaces=True))
 
             # calculating BLEU score
             bleu_score = calculate_metrics(actual_comments, generated_comments)
