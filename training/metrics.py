@@ -19,7 +19,9 @@ def calculate_metrics(actuals, preds, weights=(0.25, 0.25, 0.25, 0.25)):
 
 if __name__ == '__main__':
     # Correctly tokenized test case
-    ref = [["the", "picture", "is", "clicked", "by", "me"],["the", "picture", "was", "clicked", "by", "me"]] # List of lists (each reference should be tokenized)
+    ref = [["the", "picture", "is", "clicked", "by", "me"],
+           ["the", "picture", "was", "clicked", "by", "me"]
+    ] # List of lists (each reference should be tokenized)
     candidate = ["the", "picture", "the", "picture", "by", "me"]  # Tokenized candidate sentence
 
     # Compute BLEU score

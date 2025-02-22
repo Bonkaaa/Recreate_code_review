@@ -56,7 +56,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
                                                      clean_up_tokenization_spaces=True)
 
             generated_comments_split = [split_words_and_symbols(comment) for comment in generated_comments]
-            actual_comments_split = [split_words_and_symbols(comment) for comment in actual_comments]
+            actual_comments_split = [[split_words_and_symbols(comment) for comment in actual_comments]]
 
             # calculating BLEU score
             bleu_score = calculate_metrics(actual_comments_split, generated_comments_split)
