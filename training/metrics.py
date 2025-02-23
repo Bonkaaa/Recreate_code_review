@@ -30,7 +30,7 @@ def calculate_exact_match_score(actuals, preds):
     exact_match_metric.add_batch(predictions= preds, references= actuals)
     exact_match_score = exact_match_metric.compute(predictions = preds, references = actuals, ignore_case = True)
 
-    return exact_match_score
+    return exact_match_score['exact_match']
 
 if __name__ == '__main__':
     # Correctly tokenized test case
