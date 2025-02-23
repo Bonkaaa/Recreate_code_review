@@ -119,15 +119,12 @@ def is_data_sorted(train_dataset: list, test_dataset: list, date_format="%Y-%m-%
     logging.info("There is no data leakage in train set")
     return True
 
-def split_words_and_symbols(text):
+def split_words_and_symbols_for_generated(text):
     return re.findall(r"\w+|[^\w\s]", text)
 
-def split_words_and_symbols_for_actual(text):
-    # First split by sentences (assuming '.' is sentence delimiter)
-    sentences = text.split('.')
-    # Remove empty sentences and split each sentence into tokens
-    return [[word for word in re.findall(r"\w+|[^\w\s]", sent.strip())]
-            for sent in sentences if sent.strip()]
+def split_words_and_symbols_for_actuals(text):
+    sentences = text.split("\n")  # Split by new lines (each line is considered a sentence)
+    return [split_words_and_symbols_for_generated(sentence) for sentence in sentences]  # Tokenize each sentence separately
 
 if __name__ == "__main__":
     check_cuda_devices()
