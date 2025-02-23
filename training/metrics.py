@@ -1,4 +1,5 @@
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
+import evaluate
 from evaluate import load
 
 def calculate_bleu_score(actuals, preds, weights=(0.25, 0.25, 0.25, 0.25)):
