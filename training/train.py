@@ -43,6 +43,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
     global_step = args.start_step
     tr_loss, logging_loss, avg_loss, tr_nb, tr_num, train_loss = 0.0, 0.0, 0.0, 0, 0, 0
     best_bleu_score = 0.0
+    best_em_score = 0.0
     patience = 0
 
     args.device = accelerator.device
@@ -135,16 +136,17 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
             if accelerator.is_main_process:
                 for key, value in results.items():
                     logging.info("  %s = %s", key, round(value, 4))
-            valid_loss, valid_bleu_score = results.values()
+            valid_loss, valid_bleu_score, valid_em_score = results.values()
 
             accelerator.log({
                 'Loss/train-per-epoch': avg_loss,
                 'Loss/valid-per-epoch': valid_loss,
                 'Bleu_score/valid-per-1000-steps': valid_bleu_score,
+                'EM_score/valid-per-1000-steps': valid_em_score,
             }, step=step)
 
-            # save model checkpoint at ep2
-            if idx == 1:
+            # save model checkpoint at ep10
+            if idx == 9:
                 save_checkpoint(args, accelerator, f'checkpoint-epoch-{idx + 1}')
 
             # Save model checkpoint
@@ -155,6 +157,17 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                     logging.info("  Best Bleu Score:%s", round(best_bleu_score, 4))
                     logging.info("  " + "*" * 20)
                 save_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
+                patience = 0
+            else:
+                patience += 1
+
+            if results['eval_EM_score'] > best_em_score:
+                best_em_score = results['eval_EM_score']
+                if accelerator.is_main_process:
+                    logging.info("  " + "*" * 20)
+                    logging.info("  Best EM Score:%s", round(best_em_score, 4))
+                    logging.info("  " + "*" * 20)
+                save_checkpoint(args, accelerator, 'checkpoint-best-em-score')
                 patience = 0
             else:
                 patience += 1

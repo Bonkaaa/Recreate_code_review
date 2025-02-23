@@ -2,7 +2,7 @@ from utils import *
 import os
 import torch
 import numpy as np
-from metrics import calculate_metrics
+from metrics import *
 from tqdm.auto import tqdm
 from args_parse import *
 
@@ -20,6 +20,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
     eval_loss = 0.0
     nb_eval_steps = 0
     all_bleu_score = []
+    all_em_score = []
     model.eval()
 
     for batch in tqdm(eval_dataloader, desc="Evaluating:", disable=not accelerator.is_local_main_process):
@@ -58,19 +59,25 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
             generated_comments_split = [split_words_and_symbols_for_generated(comment) for comment in generated_comments]   #List[List[str]]
             actual_comments_split = [split_words_and_symbols_for_actuals(comment) for comment in actual_comments]           #List[List[List[str]]]
 
-            # calculating BLEU score
-            bleu_score = calculate_metrics(actual_comments_split, generated_comments_split)
+            # calculate BLEU score
+            bleu_score = calculate_bleu_score(actual_comments_split, generated_comments_split)
+            EM_score = calculate_exact_match_score(actual_comments, generated_comments)
 
+            # add all the score for avg later
             all_bleu_score.append(bleu_score)
+            all_em_score.append(EM_score)
+
         nb_eval_steps += 1
 
     #calculate avg
     avg_bleu_score = np.mean(all_bleu_score) if all_bleu_score else 0
+    avg_EM_score = np.mean(all_em_score) if all_em_score else 0
     eval_loss = eval_loss / nb_eval_steps
     perplexity = torch.tensor(eval_loss)
 
     result = {
         "eval_loss": float(perplexity),
         "eval_bleu_score": avg_bleu_score,
+        "eval_EM_score": avg_EM_score,
     }
     return result
