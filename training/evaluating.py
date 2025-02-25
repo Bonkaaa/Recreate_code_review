@@ -48,14 +48,14 @@ def evaluate(args, model, eval_dataloader, tokenizer:RobertaTokenizer, criterion
 
             # calculate BLEU score
             if accelerator.is_main_process:
-                logging.info(f"Generated comments: {generated_comments}")
-                logging.info(f"Actual comments: {actual_comments}") 
+                logging.debug(f"Generated comments: {generated_comments}")
+                logging.debug(f"Actual comments: {actual_comments}") 
                 
             bleu_score = calculate_bleu_score(actual_comments, generated_comments)
             EM_score = calculate_exact_match_score(actual_comments, generated_comments)
             if accelerator.is_main_process:
-                logging.info(f"BLEU score: {bleu_score}")
-                logging.info(f"EM score: {EM_score}")
+                logging.debug(f"BLEU score: {bleu_score}")
+                logging.debug(f"EM score: {EM_score}")
 
             # add all the score for avg later
             all_bleu_score.append(bleu_score)
