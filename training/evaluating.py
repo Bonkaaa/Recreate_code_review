@@ -56,11 +56,8 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
             actual_comments = tokenizer.batch_decode(target_ids, skip_special_tokens=True,
                                                      clean_up_tokenization_spaces=True)
 
-            generated_comments_split = [split_words_and_symbols_for_generated(comment) for comment in generated_comments]   #List[List[str]]
-            actual_comments_split = [split_words_and_symbols_for_actuals(comment) for comment in actual_comments]           #List[List[List[str]]]
-
             # calculate BLEU score
-            bleu_score = calculate_bleu_score(actual_comments_split, generated_comments_split)
+            bleu_score = calculate_bleu_score(actual_comments, generated_comments)
             EM_score = calculate_exact_match_score(actual_comments, generated_comments)
 
             # add all the score for avg later
