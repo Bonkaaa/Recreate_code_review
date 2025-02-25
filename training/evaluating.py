@@ -64,11 +64,6 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
             else:
                 generated_comments, actual_comments = None, None
 
-            # gather comments
-            generated_comments = accelerator.gather(generated_comments)
-            actual_comments = accelerator.gather(actual_comments)
-
-
             # calculate BLEU score
             bleu_score = calculate_bleu_score(actual_comments, generated_comments)
             EM_score = calculate_exact_match_score(actual_comments, generated_comments)
