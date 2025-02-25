@@ -12,8 +12,8 @@ def calculate_bleu_score(actuals, preds):
     #Weights
 
     bleu = load("bleu")
-    bleu.add(predictions=preds, references=actuals)
-    bleu_score = bleu.compute(predictions=preds, references=actuals, smooth = True)
+    bleu.add_batch(predictions=preds, references=actuals)
+    bleu_score = bleu.compute()
 
     return bleu_score['bleu']
 
@@ -26,7 +26,7 @@ def calculate_exact_match_score(actuals, preds):
     :return: EM score
     """
     exact_match_metric = load("exact_match")
-    exact_match_metric.add(predictions=preds, references=actuals)
+    exact_match_metric.add_batch(predictions=preds, references=actuals)
     exact_match_score = exact_match_metric.compute(ignore_case = True)
 
     return exact_match_score['exact_match']
