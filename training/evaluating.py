@@ -7,7 +7,7 @@ from tqdm.auto import tqdm
 from args_parse import *
 
 
-def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator):
+def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator = None):
     eval_output_dir = args.output_dir
     if not os.path.exists(eval_output_dir):
         os.makedirs(eval_output_dir)
@@ -61,8 +61,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator):
                                                         clean_up_tokenization_spaces=True)
                 actual_comments = tokenizer.batch_decode(target_ids, skip_special_tokens=True,
                                                      clean_up_tokenization_spaces=True)
-            else:
-                generated_comments, actual_comments = None, None
+
 
             # calculate BLEU score
             bleu_score = calculate_bleu_score(actual_comments, generated_comments)
