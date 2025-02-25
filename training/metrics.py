@@ -12,7 +12,6 @@ def calculate_bleu_score(actuals, preds):
     #Weights
 
     bleu = load("bleu")
-    bleu.add(predictions=preds, references=actuals)
     bleu_score = bleu.compute(predictions=preds, references=actuals, smooth = True)
 
     return bleu_score['bleu']
