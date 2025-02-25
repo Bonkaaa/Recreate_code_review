@@ -37,6 +37,7 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
 
             if accelerator:
                 loss = accelerator.gather(loss)
+                outputs = accelerator.gather(outputs)
 
             eval_loss += loss.mean().item()
 
@@ -50,11 +51,23 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=Non
                 no_repeat_ngram_size=2,
             )
 
+            # gather ids
+            generate_ids = accelerator.gather(generate_ids)
+            target_ids = accelerator.gather(target_ids)
+
             # decode generated and actual comments
-            generated_comments = tokenizer.batch_decode(generate_ids, skip_special_tokens=True,
+            if accelerator.is_main_process:
+                generated_comments = tokenizer.batch_decode(generate_ids, skip_special_tokens=True,
                                                         clean_up_tokenization_spaces=True)
-            actual_comments = tokenizer.batch_decode(target_ids, skip_special_tokens=True,
+                actual_comments = tokenizer.batch_decode(target_ids, skip_special_tokens=True,
                                                      clean_up_tokenization_spaces=True)
+            else:
+                generated_comments, actual_comments = None, None
+
+            # gather comments
+            generated_comments = accelerator.gather(generated_comments)
+            actual_comments = accelerator.gather(actual_comments)
+
 
             # calculate BLEU score
             bleu_score = calculate_bleu_score(actual_comments, generated_comments)
