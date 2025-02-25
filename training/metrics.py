@@ -26,7 +26,7 @@ def calculate_exact_match_score(actuals, preds):
     :return: EM score
     """
     exact_match_metric = load("exact_match")
-    exact_match_metric.add_batch(predictions= preds, references= actuals)
+    exact_match_metric.add(predictions= preds, references= actuals)
     exact_match_score = exact_match_metric.compute(predictions = preds, references = actuals, ignore_case = True)
 
     return exact_match_score['exact_match']
