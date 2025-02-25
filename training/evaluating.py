@@ -5,9 +5,9 @@ import numpy as np
 from metrics import *
 from tqdm.auto import tqdm
 from args_parse import *
+from transformers import RobertaTokenizer
 
-
-def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator = None):
+def evaluate(args, model, eval_dataloader, tokenizer:RobertaTokenizer, criterion, accelerator = None):
     eval_output_dir = args.output_dir
     if not os.path.exists(eval_output_dir):
         os.makedirs(eval_output_dir)
@@ -34,38 +34,28 @@ def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator = N
 
             #Compute loss
             loss = criterion(outputs.logits.view(-1, outputs.logits.size(-1)), target_ids.view(-1))
-
+            
             if accelerator:
                 loss = accelerator.gather(loss)
                 outputs = accelerator.gather(outputs)
-
+                target_ids = accelerator.gather(target_ids)
+                
+            #decode the generated comments
+            generated_comments = tokenizer.batch_decode(outputs.logits.argmax(dim=-1), skip_special_tokens=True)  # decode the generated comments   
+            actual_comments = tokenizer.batch_decode(target_ids, skip_special_tokens=True)  # decode the actual comments
+            
             eval_loss += loss.mean().item()
 
-            # generate comments
-            generate_ids = accelerator.unwrap_model(model).generate(
-                input_ids=in_ids,
-                attention_mask=in_masks,
-                max_length=256,
-                num_beams=4,
-                early_stopping=True,
-                no_repeat_ngram_size=2,
-            )
-
-            # gather ids
-            generate_ids = accelerator.gather(generate_ids)
-            target_ids = accelerator.gather(target_ids)
-
-            # decode generated and actual comments
-            if accelerator.is_main_process:
-                generated_comments = tokenizer.batch_decode(generate_ids, skip_special_tokens=True,
-                                                        clean_up_tokenization_spaces=True)
-                actual_comments = tokenizer.batch_decode(target_ids, skip_special_tokens=True,
-                                                     clean_up_tokenization_spaces=True)
-
-
             # calculate BLEU score
+            if accelerator.is_main_process:
+                logging.info(f"Generated comments: {generated_comments}")
+                logging.info(f"Actual comments: {actual_comments}") 
+                
             bleu_score = calculate_bleu_score(actual_comments, generated_comments)
             EM_score = calculate_exact_match_score(actual_comments, generated_comments)
+            if accelerator.is_main_process:
+                logging.info(f"BLEU score: {bleu_score}")
+                logging.info(f"EM score: {EM_score}")
 
             # add all the score for avg later
             all_bleu_score.append(bleu_score)
