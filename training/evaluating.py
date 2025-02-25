@@ -7,7 +7,7 @@ from tqdm.auto import tqdm
 from args_parse import *
 
 
-def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator=None):
+def evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator):
     eval_output_dir = args.output_dir
     if not os.path.exists(eval_output_dir):
         os.makedirs(eval_output_dir)
