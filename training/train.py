@@ -270,7 +270,11 @@ def main(args):
     args.block_size = min(args.block_size, tokenizer.max_len_single_sentence)
 
     model = T5ForConditionalGeneration.from_pretrained(
-        args.model_name_or_path)  # Change this to choose another model for evaluating
+        args.model_name_or_path,
+        quantization_config = bnb_config,
+        device_map="auto",
+    )
+    model = prepare_model_for_kbit_training(model)
 
     # Apply model with LoRA
     lora_config = get_lora_config()
