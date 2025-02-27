@@ -50,7 +50,6 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
     model, optimizer, train_dataloader, eval_dataloader, scheduler = accelerator.prepare(
         model, optimizer, train_dataloader, eval_dataloader, scheduler
     )
-    # load_checkpoint(args, accelerator, 'checkpoint-best-acc')
 
     # Train
     if accelerator.is_main_process:
