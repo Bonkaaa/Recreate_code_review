@@ -9,6 +9,8 @@ from evaluating import evaluate
 from transformers import DataCollatorWithPadding
 from accelerate import Accelerator
 from checkpoint import save_checkpoint, load_checkpoint
+from lora_config import *
+from peft import get_peft_model
 import numpy as np
 import wandb
 from typing import Optional
@@ -269,6 +271,10 @@ def main(args):
 
     model = T5ForConditionalGeneration.from_pretrained(
         args.model_name_or_path)  # Change this to choose another model for evaluating
+
+    # Apply model with LoRA
+    lora_config = get_lora_config()
+    model = get_peft_model(model, lora_config)
 
     if accelerator.is_main_process:
         logging.debug(model)
