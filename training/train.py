@@ -10,7 +10,8 @@ from transformers import DataCollatorWithPadding
 from accelerate import Accelerator
 from checkpoint import save_checkpoint, load_checkpoint
 from lora_config import *
-from peft import get_peft_model
+from bnb_config import *
+from peft import get_peft_model, prepare_model_for_kbit_training
 import numpy as np
 import wandb
 from typing import Optional
@@ -267,6 +268,9 @@ def main(args):
     if args.block_size <= 0:
         args.block_size = tokenizer.max_len_single_sentence  # Our input block size will be the max possible for the model
     args.block_size = min(args.block_size, tokenizer.max_len_single_sentence)
+
+    # Apply QLoRA
+    bnb_config = get_bnb_config()
 
     model = T5ForConditionalGeneration.from_pretrained(
         args.model_name_or_path,
