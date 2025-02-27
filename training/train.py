@@ -275,7 +275,6 @@ def main(args):
     model = T5ForConditionalGeneration.from_pretrained(
         args.model_name_or_path,
         quantization_config = bnb_config,
-        device_map="auto",
     )
     model = prepare_model_for_kbit_training(model)
 
