@@ -77,7 +77,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
 
                 model.train()
 
-                outputs = model(in_ids, in_masks, target_ids)
+                outputs = model(input_ids = in_ids, attention_mask = in_masks, labels = target_ids)
 
                 loss = criterion(outputs.logits.view(-1, outputs.logits.size(-1)), target_ids.view(-1))
 
