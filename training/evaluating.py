@@ -30,7 +30,7 @@ def evaluate(args, model, eval_dataloader, tokenizer:RobertaTokenizer, criterion
         with torch.no_grad():
 
             #forward
-            outputs = model(in_ids, in_masks, target_ids)
+            outputs = model(input_ids = in_ids, attention_mask = in_masks, labels = target_ids)
 
             #Compute loss
             loss = criterion(outputs.logits.view(-1, outputs.logits.size(-1)), target_ids.view(-1))
