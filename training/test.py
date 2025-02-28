@@ -69,7 +69,7 @@ if __name__ == "__main__":
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
 
     # Load the test dataset
-    test_data = load_jsonl(args.test_data_file)[:10] # Load only 10 samples for testing
+    test_data = load_jsonl(args.test_data_file)[:50] # Load only 10 samples for testing
 
     if accelerator.is_main_process:
         logging.info(f"Total test data: {len(test_data)}")

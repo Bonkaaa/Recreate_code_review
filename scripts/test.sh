@@ -29,6 +29,6 @@ CUDA_VISIBLE_DEVICES=0,1 python -m test \
     --model_type=${TYPE} \
     --tokenizer_name=${TOKENIZER} \
     --model_name_or_path=${MODEL} \
-    --test_data_file="/kaggle/input/test-data/test.jsonl" \
+    --test_data_file="/kaggle/input/test-dataset-only/test.jsonl" \
     --block_size 256 \
     --num_proc 4 \
