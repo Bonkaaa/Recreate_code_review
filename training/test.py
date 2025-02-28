@@ -2,7 +2,7 @@ import torch
 import os
 import pandas as pd
 from args_parse import main as args_parse
-from training.utils import load_jsonl
+from utils import load_jsonl
 from utils import MODEL_CLASSES
 from accelerate import Accelerator
 from transformers import T5ForConditionalGeneration, T5Tokenizer
