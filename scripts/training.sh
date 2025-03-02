@@ -1,6 +1,6 @@
 #!/bin/bash
 PROJECT="Code_review_generation"
-DataDir="/kaggle/input/100-datapoint/data"
+DataDir="/raid/data/dmtran/t5_data"
 
 # TYPE='roberta'
 # MODEL='microsoft/codebert-base'
@@ -22,7 +22,7 @@ OUTPUT_DIR=./outputs/codet5
 # TOKENIZER='microsoft/unixcoder-base'
 # OUTPUT_DIR=./outputs/unixcoder
 
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch train.py \
+CUDA_VISIBLE_DEVICES=0 accelerate launch train.py \
     --project ${PROJECT} \
     --model_dir ${MODEL} \
     --output_dir=${OUTPUT_DIR} \
@@ -34,8 +34,8 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch train.py \
     --epoch 10 \
     --do_eval \
     --block_size 256 \
-    --train_batch_size 4 \
-    --eval_batch_size 4 \
+    --train_batch_size 128 \
+    --eval_batch_size 128 \
     --learning_rate 2e-5 \
     --warmup_steps 1000 \
     --max_grad_norm 1.0 \
