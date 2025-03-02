@@ -22,7 +22,7 @@ OUTPUT_DIR=./outputs/codet5
 # TOKENIZER='microsoft/unixcoder-base'
 # OUTPUT_DIR=./outputs/unixcoder
 
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch train.py \
+CUDA_VISIBLE_DEVICES=0 accelerate launch train.py \
     --project ${PROJECT} \
     --model_dir ${MODEL} \
     --output_dir=${OUTPUT_DIR} \
@@ -31,7 +31,7 @@ CUDA_VISIBLE_DEVICES=0,1 accelerate launch train.py \
     --model_name_or_path=${MODEL} \
     --train_data_file=${DataDir}"/train.jsonl" \
     --eval_data_file=${DataDir}"/val.jsonl" \
-    --epoch 10 \
+    --epoch 5 \
     --do_eval \
     --block_size 256 \
     --train_batch_size 128 \
