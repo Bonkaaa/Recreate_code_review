@@ -30,7 +30,7 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
 
     # Load the model and tokenizer
     model = accelerator.prepare(model)
-    load_model(model, os.path.join(model_dir, "model.safetensors"), device=args.device)
+    load_model(model, os.path.join(model_dir, "model.safetensors"))
 
     # Initialize the lists to store the generated and actual comments
     all_generated_comments = []
