@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     # Retrieve the configuration, model, and tokenizer classes based on the model type specified in the arguments
     config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
-    model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
+    model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path, ignore_mismatched_sizes=True)
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case,
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
 
