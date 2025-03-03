@@ -10,7 +10,7 @@ from utils import logging
 from datasets import Dataset, load_from_disk, DatasetDict
 from torch.utils.data import DataLoader
 from transformers import DataCollatorWithPadding
-
+from safetensors.torch import load_model
 
 def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
     """
@@ -30,7 +30,7 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
 
     # Load the model and tokenizer
     model = accelerator.prepare(model)
-    accelerator.load_state(model_dir)
+    load_model(model, os.path.join(model_dir, "model.safetensors"), device=args.device)
 
     # Initialize the lists to store the generated and actual comments
     all_generated_comments = []
@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     # Retrieve the configuration, model, and tokenizer classes based on the model type specified in the arguments
     config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
-    model = T5ForConditionalGeneration.from_pretrained(args.model_dir, ignore_mismatched_sizes=True)
+    model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case,
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
 
