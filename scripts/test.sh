@@ -24,7 +24,7 @@ DataDir="/kaggle/input/dataaa/t5_data"
 
 CUDA_VISIBLE_DEVICES=0,1 python -m test \
     --project ${PROJECT} \
-    --model_dir="/kaggle/input/codet5/transformers/default/1/outputs/codet5/checkpoint-epoch-10/Code_review_generation/Salesforce/codet5-base" \
+    --model_dir="/kaggle/input/qlora/transformers/default/1/outputs_qlora/codet5/checkpoint-best-bleu-score/Code_review_generation/Salesforce/codet5-base" \
     --output_dir=${OUTPUT_DIR} \
     --model_type=${TYPE} \
     --tokenizer_name=${TOKENIZER} \
