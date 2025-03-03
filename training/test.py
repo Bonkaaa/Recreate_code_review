@@ -10,7 +10,6 @@ from utils import logging
 from datasets import Dataset, load_from_disk, DatasetDict
 from torch.utils.data import DataLoader
 from transformers import DataCollatorWithPadding
-from safetensors.torch import load_model
 
 def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
     """
