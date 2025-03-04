@@ -1,5 +1,5 @@
 from evaluate import load
-from Bleu_score.bleu import *
+from Bleu_score.bleu import Bleu
 from Bleu_score.tokenizer_13a import Tokenizer13a
 
 def calculate_bleu_score(actuals, preds):
@@ -12,10 +12,11 @@ def calculate_bleu_score(actuals, preds):
     """
 
     #Weights
+    bleu = Bleu()
+    bleu.add_batch(predictions=preds, references=actuals)
+    bleu_score = bleu.compute(predictions = preds, references = actuals ,smooth = True)
 
-    bleu_score = compute_bleu(translation_corpus = preds, reference_corpus = actuals ,smooth = True)
-
-    return bleu_score
+    return bleu_score['Bleu_score']
 
 def calculate_exact_match_score(actuals, preds):
     """
@@ -42,11 +43,7 @@ if __name__ == '__main__':
 
     # Compute BLEU score
     score = calculate_bleu_score(ref, candidate)
-    print(f"BLEU Score: {score}")
-
-    # Verify correctness
-    bleu_score = compute_bleu(translation_corpus=candidate, reference_corpus=ref, smooth = True)
-    print(f"Expected BLEU Score: {bleu_score}")
+    print(f"BLEU Score: {score:.4f}")
 
     # # Compute EM score
     # EM_score = calculate_exact_match_score(ref, candidate)['exact_match']
