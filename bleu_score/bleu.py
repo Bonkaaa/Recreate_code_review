@@ -17,7 +17,7 @@ import datasets
 
 import evaluate
 
-from Bleu_score.tokenizer_13a import Tokenizer13a
+from bleu_score.tokenizer_13a import Tokenizer13a
 
 
 _CITATION = """\
@@ -63,7 +63,7 @@ Args:
     max_order: Maximum n-gram order to use when computing BLEU score.
     smooth: Whether or not to apply Lin et al. 2004 smoothing.
 Returns:
-    'Bleu_score': Bleu_score score,
+    'bleu_score': bleu_score score,
     'precisions': geometric mean of n-gram precisions,
     'brevity_penalty': brevity penalty,
     'length_ratio': ratio of lengths,
@@ -76,9 +76,9 @@ Examples:
     ...     ["hello there general kenobi", "hello there!"],
     ...     ["foo bar foobar"]
     ... ]
-    >>> Bleu_score = evaluate.load("Bleu_score")
-    >>> results = Bleu_score.compute(predictions=predictions, references=references)
-    >>> print(results["Bleu_score"])
+    >>> bleu_score = evaluate.load("bleu_score")
+    >>> results = bleu_score.compute(predictions=predictions, references=references)
+    >>> print(results["bleu_score"])
     1.0
 """
 
@@ -235,7 +235,7 @@ class Bleu(evaluate.Metric):
         )
         (bleu, precisions, bp, ratio, translation_length, reference_length) = score
         return {
-            "Bleu_score": bleu,
+            "bleu_score": bleu,
             "precisions": precisions,
             "brevity_penalty": bp,
             "length_ratio": ratio,

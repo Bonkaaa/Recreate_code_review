@@ -1,6 +1,6 @@
 from evaluate import load
-from Bleu_score.bleu import Bleu
-from Bleu_score.tokenizer_13a import Tokenizer13a
+from bleu_score.bleu import Bleu
+from bleu_score.tokenizer_13a import Tokenizer13a
 
 def calculate_bleu_score(actuals, preds):
     """
@@ -16,7 +16,7 @@ def calculate_bleu_score(actuals, preds):
     bleu.add_batch(predictions=preds, references=actuals)
     bleu_score = bleu.compute(predictions = preds, references = actuals ,smooth = True)
 
-    return bleu_score['Bleu_score']
+    return bleu_score['bleu_score']
 
 def calculate_exact_match_score(actuals, preds):
     """
