@@ -17,7 +17,7 @@ import datasets
 
 import evaluate
 
-from tokenizer_13a import *
+from .tokenizer_13a import *
 
 
 _CITATION = """\
