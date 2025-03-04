@@ -17,7 +17,7 @@ import datasets
 
 import evaluate
 
-from training.bleu_score.tokenizer_13a import Tokenizer13a
+from tokenizer_13a import Tokenizer13a
 
 
 _CITATION = """\
