@@ -1,6 +1,6 @@
 from evaluate import load
-from bleu_score.bleu import Bleu
-from bleu_score.tokenizer_13a import Tokenizer13a
+from training.bleu_score.bleu import Bleu
+
 
 def calculate_bleu_score(actuals, preds):
     """
