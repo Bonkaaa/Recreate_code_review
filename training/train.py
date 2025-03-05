@@ -181,19 +181,19 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                 save_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
             break
 
-    # # Final Evaluation
-    # results = {}
-    # if args.do_eval:
-    #     load_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
-    #     result = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
-    #     if accelerator.is_main_process:
-    #         logging.info("***** Eval results *****")
-    #         for key in sorted(result.keys()):
-    #             logging.info(f"  {key} = {str(round(result[key], 4))}")
-    #
-    # accelerator.end_training()
-    #
-    # return results
+    # Final Evaluation
+    results = {}
+    if args.do_eval:
+        load_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
+        result = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
+        if accelerator.is_main_process:
+            logging.info("***** Eval results *****")
+            for key in sorted(result.keys()):
+                logging.info(f"  {key} = {str(round(result[key], 4))}")
+
+    accelerator.end_training()
+
+    return results
 
 
 class MyCustomTracker(GeneralTracker):
