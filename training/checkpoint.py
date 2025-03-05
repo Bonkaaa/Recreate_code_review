@@ -36,7 +36,7 @@ def save_checkpoint(args, model, accelerator, prefix):
         # Save adapter
         local_rank = torch.distributed.get_rank() if torch.distributed.is_initialized() else 0
         if local_rank == 0:
-            model.module.save_pretrained(output_dir)
+            model.module.save_pretrained(adapter_dir)
         if accelerator.is_main_process:
             logging.info(f"Saving adapter to {adapter_dir}")
 
