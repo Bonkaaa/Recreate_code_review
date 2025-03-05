@@ -16,7 +16,7 @@ TYPE='codet5'
 MODEL='Salesforce/codet5-base'
 TOKENIZER='Salesforce/codet5-base'
 OUTPUT_DIR=./outputs/codet5
-ADAPTER_DIR = ./adapter/codet5
+ADAPTER_DIR =./adapter/codet5
 
 # TYPE='roberta'
 # MODEL='microsoft/unixcoder-base'
