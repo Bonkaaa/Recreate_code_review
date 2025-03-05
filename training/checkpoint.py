@@ -6,14 +6,7 @@ from peft import PeftModel
 
 def load_checkpoint(args, model, accelerator, prefix):
     try:
-        adapter_dir = f'{args.output_dir}/{prefix}/{args.project}/{args.adapter_dir}'
-        if os.path.exists(adapter_dir):
-            if accelerator.is_main_process:
-                logging.debug(f"Found {adapter_dir}. Load back to model.")
-            PeftModel.from_pretrained(model, adapter_dir)
-        else:
-            if accelerator.is_main_process:
-                logging.debug("No adapter to load")
+        # Load model
         output_dir = f'{args.output_dir}/{prefix}/{args.project}/{args.model_dir}'
         if os.path.exists(output_dir):
             if accelerator.is_main_process:
@@ -22,6 +15,15 @@ def load_checkpoint(args, model, accelerator, prefix):
         else:
             if accelerator.is_main_process:
                 logging.debug("No accelerator to load")
+        # Load adapter
+        adapter_dir = f'{args.output_dir}/{prefix}/{args.project}/{args.adapter_dir}'
+        if os.path.exists(adapter_dir):
+            if accelerator.is_main_process:
+                logging.debug(f"Found {adapter_dir}. Load back to model.")
+            PeftModel.from_pretrained(model, adapter_dir)
+        else:
+            if accelerator.is_main_process:
+                logging.debug("No adapter to load")
     except Exception as e:
         if accelerator.is_main_process:
             logging.error(f"Load checkpoint failed: {e}")
