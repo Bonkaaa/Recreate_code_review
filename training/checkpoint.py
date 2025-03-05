@@ -24,12 +24,12 @@ def load_checkpoint(args, model, accelerator, prefix):
                 logging.debug("No accelerator to load")
     except Exception as e:
         if accelerator.is_main_process:
-            logging.error(f"Save checkpoint failed: {e}")
+            logging.error(f"Load checkpoint failed: {e}")
 
 def save_checkpoint(args, model, accelerator, prefix):
     try:
         output_dir = f'{args.output_dir}/{prefix}/{args.project}/{args.model_dir}'
-        adapter_dir = f'{args.adapter_dir}'
+        adapter_dir = f'{args.output_dir}/{prefix}/{args.project}/{args.adapter_dir}'
         os.makedirs(output_dir, exist_ok=True)
         os.makedirs(adapter_dir, exist_ok=True)
 
