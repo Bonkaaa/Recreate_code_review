@@ -28,7 +28,7 @@ def load_checkpoint(args, model, accelerator, prefix):
 def save_checkpoint(args, model, accelerator, prefix):
     try:
         output_dir = f'{args.output_dir}/{prefix}/{args.project}/{args.model_dir}'
-        adapter_dir = f'{args.adapter_dir}/{prefix}/{args.project}/adapter'
+        adapter_dir = f'{args.adapter_dir}'
         os.makedirs(output_dir, exist_ok=True)
         os.makedirs(adapter_dir, exist_ok=True)
         model.save_pretrained(output_dir)
