@@ -1,4 +1,5 @@
 import os
+import torch
 from utils import logging
 from args_parse import main as args_parse
 from peft import PeftModel
@@ -31,9 +32,15 @@ def save_checkpoint(args, model, accelerator, prefix):
         adapter_dir = f'{args.adapter_dir}'
         os.makedirs(output_dir, exist_ok=True)
         os.makedirs(adapter_dir, exist_ok=True)
-        model.save_pretrained(output_dir)
+
+        # Save adapter
+        local_rank = torch.distributed.get_rank() if torch.distributed.is_initialized() else 0
+        if local_rank == 0:
+            model.module.save_pretrained(output_dir)
         if accelerator.is_main_process:
             logging.info(f"Saving adapter to {adapter_dir}")
+
+        # Save model
         accelerator.wait_for_everyone()
         accelerator.save_state(output_dir)
         if accelerator.is_main_process:
