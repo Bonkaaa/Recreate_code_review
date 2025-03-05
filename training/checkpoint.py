@@ -6,7 +6,7 @@ from peft import PeftModel
 
 def load_checkpoint(args, model, accelerator, prefix):
     try:
-        adapter_dir = f'{args.adapter_dir}/{prefix}/{args.project}/adapter'
+        adapter_dir = f'{args.output_dir}/{prefix}/{args.project}/{args.adapter_dir}'
         if os.path.exists(adapter_dir):
             if accelerator.is_main_process:
                 logging.debug(f"Found {adapter_dir}. Load back to model.")
