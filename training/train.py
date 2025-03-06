@@ -53,7 +53,6 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
     model, optimizer, train_dataloader, eval_dataloader, scheduler = accelerator.prepare(
         model, optimizer, train_dataloader, eval_dataloader, scheduler
     )
-    # load_checkpoint(args, accelerator, 'checkpoint-best-acc')
 
     # Train
     if accelerator.is_main_process:
@@ -150,7 +149,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
 
             # save model checkpoint at ep10
             if idx == 9:
-                save_checkpoint(args, accelerator, f'checkpoint-epoch-{idx + 1}')
+                save_checkpoint(args, model, accelerator, f'checkpoint-epoch-{idx + 1}')
 
             # Save model checkpoint
             if results['eval_bleu_score'] > best_bleu_score:
@@ -159,7 +158,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                     logging.info("  " + "*" * 20)
                     logging.info("  Best Bleu Score:%s", round(best_bleu_score, 4))
                     logging.info("  " + "*" * 20)
-                save_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
+                save_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
                 patience = 0
             else:
                 patience += 1
@@ -170,7 +169,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                     logging.info("  " + "*" * 20)
                     logging.info("  Best EM Score:%s", round(best_em_score, 4))
                     logging.info("  " + "*" * 20)
-                save_checkpoint(args, accelerator, 'checkpoint-best-em-score')
+                save_checkpoint(args, model, accelerator, 'checkpoint-best-em-score')
                 patience = 0
             else:
                 patience += 1
@@ -179,13 +178,13 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
             if accelerator.is_main_process:
                 logging.info(f"Reached max patience ({args.max_patience}). End training now.")
             if best_bleu_score == 0.0:
-                save_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
+                save_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
             break
 
     # Final Evaluation
     results = {}
     if args.do_eval:
-        load_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
+        load_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
         result = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
         if accelerator.is_main_process:
             logging.info("***** Eval results *****")
@@ -286,8 +285,8 @@ def main(args):
         logging.debug(model)
 
     # Load data
-    train_data = load_jsonl(args.train_data_file)
-    eval_data = load_jsonl(args.eval_data_file)
+    train_data = load_jsonl(args.train_data_file)[:10]
+    eval_data = load_jsonl(args.eval_data_file)[:10]
     if accelerator.is_main_process:
         logging.info(f"Total train data: {len(train_data)}")
         logging.info(f"Total validate data: {len(eval_data)}")

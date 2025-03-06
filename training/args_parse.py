@@ -10,6 +10,8 @@ def main():
     parser.add_argument('--model_dir', type=str, required=True, help="directory to store the model weights.")
     parser.add_argument("--output_dir", default=None, type=str, required=True,
                         help="The output directory where the model predictions and checkpoints will be written.")
+    parser.add_argument("--adapter_dir", default=None, type=str, required=True,
+                        help="The output directory where LoRA weight adapters will be written.")
     parser.add_argument('--run_dir', type=str, default="runs", help="parent directory to store run stats.")
 
     parser.add_argument("--max_source_length", default=400, type=int,
