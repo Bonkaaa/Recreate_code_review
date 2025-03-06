@@ -1,4 +1,5 @@
 from evaluate import load
+from bleu_score.bleu import Bleu
 
 def calculate_bleu_score(actuals, preds):
     """
@@ -10,12 +11,11 @@ def calculate_bleu_score(actuals, preds):
     """
 
     #Weights
-
-    bleu = load("bleu")
+    bleu = Bleu()
     bleu.add_batch(predictions=preds, references=actuals)
-    bleu_score = bleu.compute(smooth = True)
+    bleu_score = bleu.compute(predictions = preds, references = actuals ,smooth = True)
 
-    return bleu_score['bleu']
+    return bleu_score['bleu_score']
 
 def calculate_exact_match_score(actuals, preds):
     """
@@ -43,11 +43,6 @@ if __name__ == '__main__':
     # Compute BLEU score
     score = calculate_bleu_score(ref, candidate)
     print(f"BLEU Score: {score:.4f}")
-
-    bleu = load("bleu")
-    # Verify correctness
-    bleu_score = bleu.compute(predictions=candidate, references=ref, smooth = True)
-    print(f"Expected BLEU Score: {bleu_score['bleu']:.4f}")
 
     # # Compute EM score
     # EM_score = calculate_exact_match_score(ref, candidate)['exact_match']
