@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 dotenv_path = Path('./.env')
 load_dotenv(dotenv_path=dotenv_path)
 
-def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator):
+def train(args, train_dataloader, eval_dataloader, model, original_model, tokenizer, accelerator):
     # Setup
     args.max_steps = args.epoch * len(train_dataloader)
     args.save_steps = len(train_dataloader)
@@ -184,7 +184,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
     # Final Evaluation
     results = {}
     if args.do_eval:
-        load_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
+        load_checkpoint(args, model, original_model, accelerator, 'checkpoint-best-bleu-score')
         result = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
         if accelerator.is_main_process:
             logging.info("***** Eval results *****")
@@ -271,11 +271,11 @@ def main(args):
     # Apply QLoRA
     bnb_config = get_bnb_config()
 
-    model = T5ForConditionalGeneration.from_pretrained(
+    _model = T5ForConditionalGeneration.from_pretrained(
         args.model_name_or_path,
         quantization_config = bnb_config,
     )
-    model = prepare_model_for_kbit_training(model)
+    model = prepare_model_for_kbit_training(_model)
 
     # Apply model with LoRA
     lora_config = get_lora_config()
@@ -377,7 +377,7 @@ def main(args):
     )
 
     # Training
-    results = train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator)
+    results = train(args, train_dataloader, eval_dataloader, model, _model, tokenizer, accelerator)
 
     return results
 
