@@ -285,8 +285,8 @@ def main(args):
         logging.debug(model)
 
     # Load data
-    train_data = load_jsonl(args.train_data_file)[:10]
-    eval_data = load_jsonl(args.eval_data_file)[:10]
+    train_data = load_jsonl(args.train_data_file)
+    eval_data = load_jsonl(args.eval_data_file)
     if accelerator.is_main_process:
         logging.info(f"Total train data: {len(train_data)}")
         logging.info(f"Total validate data: {len(eval_data)}")
