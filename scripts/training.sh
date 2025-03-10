@@ -16,18 +16,16 @@ TYPE='codet5'
 MODEL='Salesforce/codet5-base'
 TOKENIZER='Salesforce/codet5-base'
 OUTPUT_DIR=./outputs/codet5
-ADAPTER_DIR=adapter/codet5
 
 # TYPE='roberta'
 # MODEL='microsoft/unixcoder-base'
 # TOKENIZER='microsoft/unixcoder-base'
 # OUTPUT_DIR=./outputs/unixcoder
 
-CUDA_VISIBLE_DEVICES=0 accelerate launch train.py \
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch train.py \
     --project ${PROJECT} \
     --model_dir ${MODEL} \
     --output_dir=${OUTPUT_DIR} \
-    --adapter_dir=${ADAPTER_DIR} \
     --model_type=${TYPE} \
     --tokenizer_name=${TOKENIZER} \
     --model_name_or_path=${MODEL} \
