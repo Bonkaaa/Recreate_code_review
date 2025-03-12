@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 dotenv_path = Path('./.env')
 load_dotenv(dotenv_path=dotenv_path)
 
-def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator):
+def train(args, train_dataloader, eval_dataloader, model, original_model, tokenizer, accelerator):
     # Setup
     args.max_steps = args.epoch * len(train_dataloader)
     args.save_steps = len(train_dataloader)
@@ -149,7 +149,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
 
             # save model checkpoint at ep10
             if idx == 9:
-                save_checkpoint(args, accelerator, f'checkpoint-epoch-{idx + 1}')
+                save_checkpoint(args, model, accelerator, f'checkpoint-epoch-{idx + 1}')
 
             # Save model checkpoint
             if results['eval_bleu_score'] > best_bleu_score:
@@ -158,7 +158,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                     logging.info("  " + "*" * 20)
                     logging.info("  Best Bleu Score:%s", round(best_bleu_score, 4))
                     logging.info("  " + "*" * 20)
-                save_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
+                save_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
                 patience = 0
             else:
                 patience += 1
@@ -169,7 +169,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
                     logging.info("  " + "*" * 20)
                     logging.info("  Best EM Score:%s", round(best_em_score, 4))
                     logging.info("  " + "*" * 20)
-                save_checkpoint(args, accelerator, 'checkpoint-best-em-score')
+                save_checkpoint(args, model, accelerator, 'checkpoint-best-em-score')
                 patience = 0
             else:
                 patience += 1
@@ -178,7 +178,7 @@ def train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator
             if accelerator.is_main_process:
                 logging.info(f"Reached max patience ({args.max_patience}). End training now.")
             if best_bleu_score == 0.0:
-                save_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
+                save_checkpoint(args, model, accelerator, 'checkpoint-best-bleu-score')
             break
 
     # Final Evaluation
@@ -276,6 +276,8 @@ def main(args):
     lora_config = get_lora_config()
     model = get_peft_model(model, lora_config)
 
+    original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
+
     if accelerator.is_main_process:
         logging.debug(model)
 
@@ -372,7 +374,7 @@ def main(args):
     )
 
     # Training
-    results = train(args, train_dataloader, eval_dataloader, model, tokenizer, accelerator)
+    results = train(args, train_dataloader, eval_dataloader, model, original_model, tokenizer, accelerator)
 
     return results
 

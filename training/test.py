@@ -10,8 +10,8 @@ from utils import logging
 from datasets import Dataset, load_from_disk, DatasetDict
 from torch.utils.data import DataLoader
 from transformers import DataCollatorWithPadding
-from peft import PeftModel
-from lora_config import LoraConfig
+from peft import get_peft_model
+from lora_config import get_lora_config
 
 def test_model(args, model_dir, test_dataloader, model, original_model, tokenizer, accelerator):
     """
@@ -33,7 +33,9 @@ def test_model(args, model_dir, test_dataloader, model, original_model, tokenize
     accelerator.wait_for_everyone()
     unwrapped_model = accelerator.unwrap_model(model)
     model = unwrapped_model.from_pretrained(
-        pretrained_model_name_or_path=model_dir
+            model=original_model,
+            model_id=model_dir,
+            is_main_process=accelerator.is_main_process
     )
     model = accelerator.prepare(model)
     # Initialize the lists to store the generated and actual comments
@@ -68,14 +70,16 @@ if __name__ == "__main__":
 
     # Retrieve the configuration, model, and tokenizer classes based on the model type specified in the arguments
     config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
-    # Apply QLoRA
 
-    # Load model with QLoRA
-    model = T5ForConditionalGeneration.from_pretrained(
-        args.model_name_or_path,
-    )
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case,
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
+
+    # Load model
+    model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
+
+    # Load model with LoRA
+    lora_config = get_lora_config()
+    model = get_peft_model(model, lora_config)
 
     # Load the original model
     original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
