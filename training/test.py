@@ -12,7 +12,6 @@ from torch.utils.data import DataLoader
 from transformers import DataCollatorWithPadding
 from bnb_config import get_bnb_config
 from peft import PeftModel
-from checkpoint import load_checkpoint
 
 def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
     """
@@ -33,7 +32,14 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
     # Load the model and tokenizer
     model = accelerator.prepare(model)
     original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
-    load_checkpoint(args, model, original_model, accelerator, prefix="test")
+
+    accelerator.wait_for_everyone()
+    unwrapped_model = accelerator.unwrap_model(model)
+    unwrapped_model.from_pretrained(
+        model=original_model,
+        model_id=model_dir,
+        is_main_process=accelerator.is_main_process
+    )
 
     # Initialize the lists to store the generated and actual comments
     all_generated_comments = []
