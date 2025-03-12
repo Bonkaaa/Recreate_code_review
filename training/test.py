@@ -13,7 +13,7 @@ from transformers import DataCollatorWithPadding
 from bnb_config import get_bnb_config
 from peft import PeftModel
 
-def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
+def test_model(args, model_dir, test_dataloader, model, original_model, tokenizer, accelerator):
     """
         Tests the model with the provided test dataset.
 
@@ -31,11 +31,10 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
 
     # Load the model and tokenizer
     model = accelerator.prepare(model)
-
     accelerator.wait_for_everyone()
     unwrapped_model = accelerator.unwrap_model(model)
     model = unwrapped_model.from_pretrained(
-        pretrained_model_name_or_path=args.model_name_or_path,
+        model = original_model,
         model_id=model_dir,
         is_main_process=accelerator.is_main_process
     )
@@ -75,12 +74,16 @@ if __name__ == "__main__":
     # Apply QLoRA
     bnb_config = get_bnb_config()
 
+    # Load model with QLoRA
     model = T5ForConditionalGeneration.from_pretrained(
         args.model_name_or_path,
         quantization_config=bnb_config,
     )
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case,
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
+
+    # Load the original model
+    original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
 
     # Load the test dataset
     test_data = load_jsonl(args.test_data_file)[:10] # Load only 10 samples for testing
