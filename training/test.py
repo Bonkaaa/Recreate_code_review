@@ -30,14 +30,11 @@ def test_model(args, model_dir, test_dataloader, model, original_model, tokenize
     args.device = accelerator.device
 
     # Load the model and tokenizer
-    model = accelerator.prepare(model)
     accelerator.wait_for_everyone()
     unwrapped_model = accelerator.unwrap_model(model)
-    if accelerator.is_main_process:
-        logging.info(f"Model loaded from {model_dir}")
-        model = unwrapped_model.from_pretrained(
-            pretrained_model_name_or_path=model_dir
-        )
+    model = unwrapped_model.from_pretrained(
+        pretrained_model_name_or_path=model_dir
+    )
 
     # Initialize the lists to store the generated and actual comments
     all_generated_comments = []
