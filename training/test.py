@@ -35,7 +35,6 @@ def test_model(args, model_dir, test_dataloader, model, original_model, tokenize
     unwrapped_model = accelerator.unwrap_model(model)
     model = unwrapped_model.from_pretrained(
         pretrained_model_name_or_path=model_dir,
-        model = original_model,
         is_main_process=accelerator.is_main_process
     )
 
