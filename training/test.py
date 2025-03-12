@@ -11,9 +11,10 @@ from datasets import Dataset, load_from_disk, DatasetDict
 from torch.utils.data import DataLoader
 from transformers import DataCollatorWithPadding
 from bnb_config import get_bnb_config
-from peft import PeftModel
+from peft import get_peft_model
+from lora_config import get_lora_config
 
-def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
+def test_model(args, model_dir, test_dataloader, model, original_model, tokenizer, accelerator):
     """
         Tests the model with the provided test dataset.
 
@@ -30,11 +31,14 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
     args.device = accelerator.device
 
     # Load the model and tokenizer
+    accelerator.wait_for_everyone()
+    unwrapped_model = accelerator.unwrap_model(model)
+    model = unwrapped_model.from_pretrained(
+            model=original_model,
+            model_id=model_dir,
+            is_main_process=accelerator.is_main_process
+    )
     model = accelerator.prepare(model)
-    accelerator.load_state(model_dir)
-    # Reload model with LoRA
-    model = PeftModel.from_pretrained(model, args.adapter_dir)
-
     # Initialize the lists to store the generated and actual comments
     all_generated_comments = []
     all_actual_comments = []
@@ -70,12 +74,20 @@ if __name__ == "__main__":
     # Apply QLoRA
     bnb_config = get_bnb_config()
 
+    # Load model with QLoRA
     model = T5ForConditionalGeneration.from_pretrained(
         args.model_name_or_path,
         quantization_config=bnb_config,
     )
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case,
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
+
+    # Load model with LoRA
+    lora_config = get_lora_config()
+    model = get_peft_model(model, lora_config)
+
+    # Load the original model
+    original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
 
     # Load the test dataset
     test_data = load_jsonl(args.test_data_file)[:10] # Load only 10 samples for testing
@@ -137,7 +149,7 @@ if __name__ == "__main__":
     )
 
     # Test the model
-    all_generated_comments, all_actual_comments = test_model(args, args.model_dir, test_dataloader, model, tokenizer, accelerator)
+    all_generated_comments, all_actual_comments = test_model(args, args.model_dir, test_dataloader, model, original_model, tokenizer, accelerator)
 
     df = pd.DataFrame({"actual_comments": all_actual_comments, "generated_comments": all_generated_comments})
     df.to_csv("test_results.csv")
