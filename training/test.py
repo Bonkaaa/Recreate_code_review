@@ -35,7 +35,7 @@ def test_model(args, model_dir, test_dataloader, model, original_model, tokenize
     model = unwrapped_model.from_pretrained(
         pretrained_model_name_or_path=model_dir
     )
-
+    model = accelerator.prepare(model)
     # Initialize the lists to store the generated and actual comments
     all_generated_comments = []
     all_actual_comments = []
