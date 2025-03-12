@@ -144,7 +144,7 @@ if __name__ == "__main__":
     )
 
     # Test the model
-    all_generated_comments, all_actual_comments = test_model(args, args.model_dir, test_dataloader, model, original_model, tokenizer, accelerator)
+    all_generated_comments, all_actual_comments = test_model(args, args.model_dir, test_dataloader, model, tokenizer, accelerator)
 
     df = pd.DataFrame({"actual_comments": all_actual_comments, "generated_comments": all_generated_comments})
     df.to_csv("test_results.csv")
