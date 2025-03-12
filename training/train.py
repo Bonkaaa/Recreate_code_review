@@ -184,7 +184,7 @@ def train(args, train_dataloader, eval_dataloader, model, original_model, tokeni
     # Final Evaluation
     results = {}
     if args.do_eval:
-        load_checkpoint(args, accelerator, 'checkpoint-best-bleu-score')
+        load_checkpoint(args, model, original_model, accelerator, 'checkpoint-best-bleu-score')
         result = evaluate(args, model, eval_dataloader, tokenizer, criterion, accelerator)
         if accelerator.is_main_process:
             logging.info("***** Eval results *****")
