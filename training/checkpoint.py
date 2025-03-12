@@ -9,8 +9,7 @@ def load_checkpoint(args, model, original_model, accelerator, prefix):
         if not os.path.exists(output_dir):
             if accelerator.is_main_process:
                 raise FileNotFoundError(f"Model checkpoint not found: {output_dir}")
-        
-        # Save model
+
         accelerator.wait_for_everyone()
         unwrapped_model = accelerator.unwrap_model(model)
         unwrapped_model.from_pretrained(
@@ -18,10 +17,10 @@ def load_checkpoint(args, model, original_model, accelerator, prefix):
             model_id=output_dir,
             is_main_process=accelerator.is_main_process
         )
-        
+
         if accelerator.is_main_process:
             logging.info(f"Found {output_dir}. Load back to accelerator.")
-        
+
     except Exception as e:
         if accelerator.is_main_process:
             logging.error(f"Load checkpoint failed: {e}")
