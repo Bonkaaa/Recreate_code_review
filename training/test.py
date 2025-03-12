@@ -32,7 +32,7 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
 
     # Load the model and tokenizer
     model = accelerator.prepare(model)
-    original_model = T5ForConditionalGeneration(args.model_name_or_path)
+    original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
     load_checkpoint(args, model, original_model, accelerator, prefix="test")
 
     # Initialize the lists to store the generated and actual comments
