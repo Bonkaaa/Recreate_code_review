@@ -35,7 +35,7 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
 
     accelerator.wait_for_everyone()
     unwrapped_model = accelerator.unwrap_model(model)
-    unwrapped_model.from_pretrained(
+    model = unwrapped_model.from_pretrained(
         model=original_model,
         model_id=model_dir,
         is_main_process=accelerator.is_main_process
