@@ -14,7 +14,7 @@ from bnb_config import get_bnb_config
 from peft import get_peft_model
 from lora_config import get_lora_config
 
-def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
+def test_model(args, model_dir, test_dataloader, model, original_model, tokenizer, accelerator):
     """
         Tests the model with the provided test dataset.
 
@@ -34,7 +34,9 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
     accelerator.wait_for_everyone()
     unwrapped_model = accelerator.unwrap_model(model)
     model = unwrapped_model.from_pretrained(
-        pretrained_model_name_or_path=model_dir
+            model=original_model,
+            model_id=model_dir,
+            is_main_process=accelerator.is_main_process
     )
     model = accelerator.prepare(model)
     # Initialize the lists to store the generated and actual comments
@@ -83,6 +85,9 @@ if __name__ == "__main__":
     # Load model with LoRA
     lora_config = get_lora_config()
     model = get_peft_model(model, lora_config)
+
+    # Load the original model
+    original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
 
     # Load the test dataset
     test_data = load_jsonl(args.test_data_file)[:10] # Load only 10 samples for testing
