@@ -11,9 +11,10 @@ from datasets import Dataset, load_from_disk, DatasetDict
 from torch.utils.data import DataLoader
 from transformers import DataCollatorWithPadding
 from bnb_config import get_bnb_config
-from peft import PeftModel
+from peft import get_peft_model
+from lora_config import get_lora_config
 
-def test_model(args, model_dir, test_dataloader, model, original_model, tokenizer, accelerator):
+def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
     """
         Tests the model with the provided test dataset.
 
@@ -79,8 +80,9 @@ if __name__ == "__main__":
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case,
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
 
-    # Load the original model
-    original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
+    # Load model with LoRA
+    lora_config = get_lora_config()
+    model = get_peft_model(model, lora_config)
 
     # Load the test dataset
     test_data = load_jsonl(args.test_data_file)[:10] # Load only 10 samples for testing
