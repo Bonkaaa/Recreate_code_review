@@ -34,8 +34,8 @@ def test_model(args, model_dir, test_dataloader, model, original_model, tokenize
     accelerator.wait_for_everyone()
     unwrapped_model = accelerator.unwrap_model(model)
     model = unwrapped_model.from_pretrained(
+        pretrained_model_name_or_path=model_dir,
         model = original_model,
-        model_id=model_dir,
         is_main_process=accelerator.is_main_process
     )
 
@@ -83,7 +83,7 @@ if __name__ == "__main__":
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
 
     # Load the original model
-    original_model = T5ForConditionalGeneration.from_pretrained(args.model_dir)
+    original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
 
     # Load the test dataset
     test_data = load_jsonl(args.test_data_file)[:10] # Load only 10 samples for testing
