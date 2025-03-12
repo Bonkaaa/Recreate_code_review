@@ -31,12 +31,11 @@ def test_model(args, model_dir, test_dataloader, model, tokenizer, accelerator):
 
     # Load the model and tokenizer
     model = accelerator.prepare(model)
-    original_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
 
     accelerator.wait_for_everyone()
     unwrapped_model = accelerator.unwrap_model(model)
     model = unwrapped_model.from_pretrained(
-        pretrained_model_name_or_path=original_model,
+        pretrained_model_name_or_path=args.model_name_or_path,
         model_id=model_dir,
         is_main_process=accelerator.is_main_process
     )
