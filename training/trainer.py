@@ -99,7 +99,7 @@ def main(args):
     train_dataloader, eval_dataloader = dataset_loader(args, train_data, eval_data, tokenizer)
 
     # Prepare accelerator
-    model, train_dataloader, eval_dataloader = accelerator.prepare(
+    model = accelerator.prepare(
         model
     )
 
