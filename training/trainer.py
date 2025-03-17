@@ -6,6 +6,7 @@ from functools import partial
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 from utils import *
 from accelerate import Accelerator
+from dataset import dataset_loader
 
 def seq2seq_training_ars(args):
     training_args = Seq2SeqTrainingArguments(
@@ -95,11 +96,18 @@ def main(args):
         logging.info(f"Total train data: {len(train_data)}")
         logging.info(f"Total validate data: {len(eval_data)}")
 
+    train_dataloader, eval_dataloader = dataset_loader(args, train_data, eval_data, tokenizer)
+
+    # Prepare accelerator
+    model, train_dataloader, eval_dataloader, scheduler = accelerator.prepare(
+        model, train_dataloader, eval_dataloader,
+    )
+
     # Load the training arguments
     training_args = seq2seq_training_ars(args)
 
     # Load the trainer
-    trainer = seq2seq_trainer(args, model, training_args, train_data, eval_data, tokenizer)
+    trainer = seq2seq_trainer(args, model, training_args, train_dataloader, eval_dataloader, tokenizer)
 
     # Train the model
     train_results = trainer.train()

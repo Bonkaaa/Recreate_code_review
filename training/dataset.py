@@ -4,7 +4,7 @@ from transformers import DataCollatorWithPadding
 from torch.utils.data import DataLoader
 from args_parse import main as args_parse
 
-def dataset(args, train_data, eval_data, tokenizer):
+def dataset_loader(args, train_data, eval_data, tokenizer):
     # Process the list
     for entry in train_data:
         entry["code_tokens"] = " ".join(entry["code_tokens"])  # Concatenate code tokens
