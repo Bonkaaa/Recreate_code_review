@@ -100,7 +100,7 @@ def main(args):
 
     # Prepare accelerator
     model, train_dataloader, eval_dataloader = accelerator.prepare(
-        model, train_dataloader, eval_dataloader,
+        model
     )
 
     # Load the training arguments
