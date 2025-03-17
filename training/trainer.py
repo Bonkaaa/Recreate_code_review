@@ -96,7 +96,7 @@ def main(args):
         logging.info(f"Total train data: {len(train_data)}")
         logging.info(f"Total validate data: {len(eval_data)}")
 
-    train_dataloader, eval_dataloader = dataset_loader(args, train_data, eval_data, tokenizer)
+    train_dataset, eval_dataset = dataset_loader(args, train_data, eval_data, tokenizer)
 
     # Prepare accelerator
     model = accelerator.prepare(
@@ -107,7 +107,7 @@ def main(args):
     training_args = seq2seq_training_ars(args)
 
     # Load the trainer
-    trainer = seq2seq_trainer(args, model, training_args, train_dataloader, eval_dataloader, tokenizer)
+    trainer = seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer)
 
     # Train the model
     train_results = trainer.train()
