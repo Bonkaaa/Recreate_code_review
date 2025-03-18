@@ -67,7 +67,7 @@ def dataset_loader(args, train_data, eval_data, tokenizer):
         tokenized_val_dataset = tokenized_val_dataset.rename_column('attention_mask', 'decoder_attention_mask')
         tokenized_val_dataset = tokenized_val_dataset.remove_columns(['code_tokens', 'docstring_tokens'])
         tokenized_val_dataset = tokenized_val_dataset.rename_column('code_ids', 'input_ids')
-        tokenized_val_dataset = tokenized_val_dataset.rename_column('docs_ids', 'decoder_input_ids')
+        tokenized_val_dataset = tokenized_val_dataset.rename_column('docs_ids', 'labels')
         tokenized_val_dataset = tokenized_val_dataset.rename_column('code_attention_mask', 'attention_mask')
         tokenized_val_dataset.save_to_disk(tokenized_val_path)
     tokenized_val_dataset.set_format("torch")
