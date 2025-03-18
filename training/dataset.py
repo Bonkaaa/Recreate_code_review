@@ -50,7 +50,7 @@ def dataset_loader(args, train_data, eval_data, tokenizer):
         tokenized_train_dataset = tokenized_train_dataset.rename_column('attention_mask', 'decoder_attention_mask')
         tokenized_train_dataset = tokenized_train_dataset.remove_columns(['code_tokens', 'docstring_tokens'])
         tokenized_train_dataset = tokenized_train_dataset.rename_column('code_ids', 'input_ids')
-        tokenized_train_dataset = tokenized_train_dataset.rename_column('docs_ids', 'decoder_input_ids')
+        tokenized_train_dataset = tokenized_train_dataset.rename_column('docs_ids', 'labels')
         tokenized_train_dataset = tokenized_train_dataset.rename_column('code_attention_mask', 'attention_mask')
         tokenized_train_dataset.save_to_disk(tokenized_train_path)
     tokenized_train_dataset.set_format("torch")
