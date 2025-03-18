@@ -31,6 +31,7 @@ def seq2seq_training_ars(args):
         report_to="wandb",
         logging_strategy="steps",
         logging_steps=args.logging_steps,
+        remove_unused_columns=False,
     )
     return training_args
 
