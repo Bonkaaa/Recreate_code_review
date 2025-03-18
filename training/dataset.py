@@ -76,15 +76,4 @@ def dataset_loader(args, train_data, eval_data, tokenizer):
         "validation": tokenized_val_dataset
     })
 
-    # # DataLoader
-    # data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
-    #
-    # train_dataloader = DataLoader(
-    #     tokenized_datasets["train"], shuffle=True, batch_size=args.train_batch_size, collate_fn=data_collator
-    # )
-    # eval_dataloader = DataLoader(
-    #     tokenized_datasets["validation"], batch_size=args.eval_batch_size, collate_fn=data_collator
-    # )
-    print(type(tokenized_datasets["train"]))
-    raise SystemExit
-    return train_dataloader, eval_dataloader
+    return tokenized_datasets['train'], tokenized_datasets['validation']
