@@ -85,6 +85,6 @@ def dataset_loader(args, train_data, eval_data, tokenizer):
     eval_dataloader = DataLoader(
         tokenized_datasets["validation"], batch_size=args.eval_batch_size, collate_fn=data_collator
     )
-    print(type(tokenized_train_path))
+    print(type(train_dataloader))
     raise SystemExit
     return train_dataloader, eval_dataloader
