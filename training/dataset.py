@@ -70,7 +70,7 @@ def dataset_loader(args, train_data, eval_data, tokenizer):
         tokenized_val_dataset.save_to_disk(tokenized_val_path)
     tokenized_val_dataset.set_format("torch")
 
-    print(tokenized_train_path)
+    print(type(tokenized_train_path))
     raise SystemExit
 
     train_dataset = Dataset.from_dict({"source": tokenized_train_dataset["input_ids"], "target": tokenized_train_dataset["target_ids"]})
