@@ -70,9 +70,21 @@ def dataset_loader(args, train_data, eval_data, tokenizer):
         tokenized_val_dataset.save_to_disk(tokenized_val_path)
     tokenized_val_dataset.set_format("torch")
 
+    # Combine datasets into DatasetDict
+    tokenized_datasets = DatasetDict({
+        "train": tokenized_train_dataset,
+        "validation": tokenized_val_dataset
+    })
+
+    # DataLoader
+    data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+
+    train_dataloader = DataLoader(
+        tokenized_datasets["train"], shuffle=True, batch_size=args.train_batch_size, collate_fn=data_collator
+    )
+    eval_dataloader = DataLoader(
+        tokenized_datasets["validation"], batch_size=args.eval_batch_size, collate_fn=data_collator
+    )
     print(type(tokenized_train_path))
     raise SystemExit
-
-    train_dataset = Dataset.from_dict({"source": tokenized_train_dataset["input_ids"], "target": tokenized_train_dataset["target_ids"]})
-    eval_dataset = Dataset.from_dict({"source": tokenized_val_dataset["input_ids"], "target": tokenized_val_dataset["target_ids"]})
-    return train_dataset, eval_dataset
+    return train_dataloader, eval_dataloader
