@@ -108,10 +108,13 @@ def main(args):
     # Load the trainer
     trainer = seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer)
 
+    if isinstance(trainer.model, torch.nn.parallel.DistributedDataParallel):
+        model = trainer.model.module  # Unwrap only for inference
+    else:
+        model = trainer.model
+
     # Train the model
     train_results = trainer.train()
-
-    model = accelerator.unwrap_model(model)
 
     # Evaluate the model
     eval_results = trainer.evaluate()
