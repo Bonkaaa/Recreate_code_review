@@ -34,8 +34,8 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch trainer.py \
     --epoch 5 \
     --do_eval \
     --block_size 256 \
-    --train_batch_size 8 \
-    --eval_batch_size 8 \
+    --train_batch_size 4 \
+    --eval_batch_size 4 \
     --learning_rate 2e-5 \
     --warmup_steps 1000 \
     --max_grad_norm 1.0 \
