@@ -91,8 +91,8 @@ def main(args):
         logging.debug(tokenizer)
 
     # Load data
-    train_data = load_jsonl(args.train_data_file)
-    eval_data = load_jsonl(args.eval_data_file)
+    train_data = load_jsonl(args.train_data_file)[:20]
+    eval_data = load_jsonl(args.eval_data_file)[:20]
 
     if accelerator.is_main_process:
         logging.info(f"Total train data: {len(train_data)}")
