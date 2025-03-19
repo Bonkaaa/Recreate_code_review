@@ -7,7 +7,6 @@ from transformers import T5ForConditionalGeneration, T5Tokenizer
 from utils import *
 from accelerate import Accelerator
 from dataset import dataset_loader
-from CustomSeq2SeqTrainer import CustomSeq2SeqTrainer
 
 def seq2seq_training_ars(args):
     training_args = Seq2SeqTrainingArguments(
@@ -61,7 +60,7 @@ def compute_metrics(pred, tokenizer):
     }
 
 def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer):
-    trainer = CustomSeq2SeqTrainer(
+    trainer = Seq2SeqTrainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset,
@@ -115,7 +114,7 @@ def main(args):
     train_results = trainer.train()
 
     # Evaluate the model
-    eval_results = trainer.evaluate()
+    eval_results = trainer.evaluate(eval_dataset, metric_key_prefix="eval", dataloader_pin_memory=False)
 
     return train_results, eval_results
 
