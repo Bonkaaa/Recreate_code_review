@@ -100,9 +100,7 @@ def main(args):
     train_dataset, eval_dataset = dataset_loader(args, train_data, eval_data, tokenizer)
 
     # Prepare accelerator
-    model = accelerator.prepare(
-        model
-    )
+    model = accelerator.prepare(model)
 
     # Load the training arguments
     training_args = seq2seq_training_ars(args)
@@ -113,8 +111,10 @@ def main(args):
     # Train the model
     train_results = trainer.train()
 
+    model = accelerator.unwrap_model(model)
+
     # Evaluate the model
-    eval_results = trainer.evaluate(eval_dataset, metric_key_prefix="eval", dataloader_pin_memory=False)
+    eval_results = trainer.evaluate()
 
     return train_results, eval_results
 
