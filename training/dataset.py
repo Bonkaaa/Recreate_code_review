@@ -72,8 +72,6 @@ def dataset_loader(args, train_data, eval_data, tokenizer):
         tokenized_val_dataset.save_to_disk(tokenized_val_path)
     tokenized_val_dataset.set_format("torch")
 
-    print(tokenized_train_dataset.column_names)
-    raise SystemExit
     # Combine datasets into DatasetDict
     tokenized_datasets = DatasetDict({
         "train": tokenized_train_dataset,
