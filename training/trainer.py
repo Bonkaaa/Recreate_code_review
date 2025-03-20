@@ -11,6 +11,12 @@ from CustomSeq2SeqTrainer import CustomSeq2SeqTrainer
 from transformers import DataCollatorWithPadding
 from bleu_score.bleu import Bleu
 
+# Initialize the tokenizer
+args = args_parse()
+config_class, model_class, tokenizer_class = MODEL_CLASSES[args.model_type]
+tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name, do_lower_case=args.do_lower_case,
+                                                cache_dir=args.cache_dir if args.cache_dir else None)
+
 def seq2seq_training_ars(args):
     training_args = Seq2SeqTrainingArguments(
         output_dir=args.output_dir,
@@ -35,8 +41,8 @@ def seq2seq_training_ars(args):
         logging_strategy="steps",
         logging_steps=args.logging_steps,
         remove_unused_columns=False,
-        metric_for_best_model="bleu_score",
-        greater_is_better=True,
+        # metric_for_best_model="bleu_score",
+        # greater_is_better=True,
     )
     return training_args
 
@@ -83,7 +89,7 @@ def deep_type(obj):
 #         "em_score": avg_em_score
 #     }
 
-def compute_metrics(eval_pred, tokenizer):
+def compute_metrics(eval_pred):
     preds, labels = eval_pred
 
     # Decode the predictions and labels
