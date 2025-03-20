@@ -44,6 +44,7 @@ def compute_metrics(eval_pred, tokenizer):
     predictions, labels = eval_pred
 
     print(predictions[0].shape)
+    print(labels[0].shape)
     raise SystemExit()
 
     decoded_references = tokenizer.batch_decode(predictions[0], skip_special_tokens=True)
