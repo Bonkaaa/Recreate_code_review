@@ -40,10 +40,28 @@ def seq2seq_training_ars(args):
     )
     return training_args
 
+def deep_type(obj):
+    """Recursively get the deep type of a variable."""
+    if isinstance(obj, list):
+        if not obj:  # Empty list case
+            return "list[?]"
+        return f"list[{deep_type(obj[0])}]"  # Check the type of the first element
+    elif isinstance(obj, tuple):
+        if not obj:
+            return "tuple[?]"
+        return f"tuple[{', '.join(deep_type(item) for item in obj)}]"
+    elif isinstance(obj, np.ndarray):
+        return f"numpy.ndarray[{obj.dtype}]"
+    elif isinstance(obj, torch.Tensor):
+        return f"torch.Tensor[{obj.dtype}]"
+    else:
+        return str(type(obj).__name__)  # Return the simple type name
+
 def compute_metrics(eval_pred, tokenizer):
     predictions, labels = eval_pred
 
-    print(predictions[0])
+    predictions = deep_type(predictions)
+    print(predictions)
     raise SystemExit()
 
     decoded_references = tokenizer.batch_decode(predictions[0], skip_special_tokens=True)
