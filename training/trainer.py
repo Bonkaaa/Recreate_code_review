@@ -9,6 +9,7 @@ from accelerate import Accelerator
 from dataset import dataset_loader
 from CustomSeq2SeqTrainer import CustomSeq2SeqTrainer
 from transformers import DataCollatorWithPadding
+from bleu_score.bleu import Bleu
 
 def seq2seq_training_ars(args):
     training_args = Seq2SeqTrainingArguments(
@@ -56,31 +57,47 @@ def deep_type(obj):
     else:
         return str(type(obj).__name__)  # Return the simple type name
 
+# def compute_metrics(eval_pred, tokenizer):
+#     predictions, labels = eval_pred
+#
+#     # print(predictions)
+#     # raise SystemExit()
+#
+#     decoded_references = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+#     decoded_generated_texts = tokenizer.batch_decode(labels, skip_special_tokens=True)
+#
+#     all_bleu_score = []
+#     all_em_score = []
+#
+#     for ref, gen in zip(decoded_references, decoded_generated_texts):
+#         bleu_score = calculate_bleu_score([ref], [gen])
+#         em_score = calculate_exact_match_score([ref], [gen])
+#         all_bleu_score.append(bleu_score)
+#         all_em_score.append(em_score)
+#
+#     avg_bleu_score = np.mean(all_bleu_score) if all_bleu_score else 0
+#     avg_em_score = np.mean(all_em_score) if all_em_score else 0
+#
+#     return {
+#         "bleu_score": avg_bleu_score,
+#         "em_score": avg_em_score
+#     }
+
 def compute_metrics(eval_pred, tokenizer):
-    predictions, labels = eval_pred
+    preds, labels = eval_pred
 
-    # print(predictions)
-    # raise SystemExit()
+    # Decode the predictions and labels
+    decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
-    decoded_references = tokenizer.batch_decode(predictions, skip_special_tokens=True)
-    decoded_generated_texts = tokenizer.batch_decode(labels, skip_special_tokens=True)
+    # Calculate BLEU score
+    bleu = Bleu()
+    bleu_score = bleu.compute(predictions=decoded_preds,
+                                references=[[label] for label in decoded_labels],
+                                max_order=4
+                            )
 
-    all_bleu_score = []
-    all_em_score = []
-
-    for ref, gen in zip(decoded_references, decoded_generated_texts):
-        bleu_score = calculate_bleu_score([ref], [gen])
-        em_score = calculate_exact_match_score([ref], [gen])
-        all_bleu_score.append(bleu_score)
-        all_em_score.append(em_score)
-
-    avg_bleu_score = np.mean(all_bleu_score) if all_bleu_score else 0
-    avg_em_score = np.mean(all_em_score) if all_em_score else 0
-
-    return {
-        "bleu_score": avg_bleu_score,
-        "em_score": avg_em_score
-    }
+    return bleu_score
 
 def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator):
     trainer = CustomSeq2SeqTrainer(
