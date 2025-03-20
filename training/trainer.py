@@ -59,8 +59,8 @@ def deep_type(obj):
 
 def compute_metrics(eval_pred, tokenizer):
     predictions, labels = eval_pred
-
-    predictions = deep_type(predictions[0])
+    predictions = [np.float32(x) for x in predictions[0]]
+    predictions = deep_type(predictions)
     print(predictions)
     raise SystemExit()
 
