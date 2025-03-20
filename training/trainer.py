@@ -76,7 +76,6 @@ def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tok
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
         compute_metrics=partial(compute_metrics, tokenizer=tokenizer),
-        # data_collator=data_collator
     )
     return trainer
 
@@ -118,7 +117,7 @@ def main(args):
     training_args = seq2seq_training_ars(args)
 
     # Load the trainer
-    trainer = seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator)
+    trainer = seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer)
 
     # Train the model
     train_results = trainer.train()
