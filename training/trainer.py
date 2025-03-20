@@ -8,7 +8,7 @@ from utils import *
 from accelerate import Accelerator
 from dataset import dataset_loader
 from CustomSeq2SeqTrainer import CustomSeq2SeqTrainer
-from transformers import DataCollatorForSeq2Seq
+from transformers import DataCollatorWithPadding
 
 def seq2seq_training_ars(args):
     training_args = Seq2SeqTrainingArguments(
@@ -99,7 +99,7 @@ def main(args):
     if accelerator.is_main_process:
         logging.debug(tokenizer)
 
-    data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, max_length=args.block_size, return_tensors="pt")
+    data_collator = DataCollatorWithPadding(tokenizer, model=model, max_length=args.block_size, return_tensors="pt")
 
     # Load data
     train_data = load_jsonl(args.train_data_file)[:5]
