@@ -76,7 +76,7 @@ def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tok
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
         compute_metrics=partial(compute_metrics, tokenizer=tokenizer),
-        data_collator=data_collator
+        # data_collator=data_collator
     )
     return trainer
 
@@ -99,7 +99,7 @@ def main(args):
     if accelerator.is_main_process:
         logging.debug(tokenizer)
 
-    data_collator = DataCollatorWithPadding(tokenizer, max_length=args.block_size)
+    # data_collator = DataCollatorWithPadding(tokenizer, max_length=args.block_size)
 
     # Load data
     train_data = load_jsonl(args.train_data_file)[:5]
