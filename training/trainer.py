@@ -43,11 +43,7 @@ def seq2seq_training_ars(args):
 def compute_metrics(eval_pred, tokenizer):
     predictions, labels = eval_pred
 
-    print("Predictions:", type(predictions), len(predictions))  # Check type & shape
-    print("Labels:", type(labels), len(labels))  # Check type & shape
-    raise SystemExit()
-
-    decoded_references = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+    decoded_references = tokenizer.batch_decode(predictions[0], skip_special_tokens=True)
     decoded_generated_texts = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
     all_bleu_score = []
@@ -68,7 +64,7 @@ def compute_metrics(eval_pred, tokenizer):
         "em_score": avg_em_score
     }
 
-def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer):
+def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator):
     trainer = CustomSeq2SeqTrainer(
         model=model,
         args=training_args,
@@ -76,6 +72,7 @@ def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tok
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
         compute_metrics=partial(compute_metrics, tokenizer=tokenizer),
+        data_collator=data_collator
     )
     return trainer
 
@@ -98,7 +95,7 @@ def main(args):
     if accelerator.is_main_process:
         logging.debug(tokenizer)
 
-    # data_collator = DataCollatorWithPadding(tokenizer, max_length=args.block_size)
+    data_collator = DataCollatorWithPadding(tokenizer, max_length=args.block_size)
 
     # Load data
     train_data = load_jsonl(args.train_data_file)[:5]
@@ -117,7 +114,7 @@ def main(args):
     training_args = seq2seq_training_ars(args)
 
     # Load the trainer
-    trainer = seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer)
+    trainer = seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator)
 
     # Train the model
     train_results = trainer.train()
