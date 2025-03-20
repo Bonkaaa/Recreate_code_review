@@ -43,12 +43,15 @@ def seq2seq_training_ars(args):
 def compute_metrics(eval_pred, tokenizer):
     predictions, labels = eval_pred
 
+    print(type(predictions[0]))
+    print(type(labels))
+    raise SystemExit()
+
     decoded_references = tokenizer.batch_decode(predictions[0], skip_special_tokens=True)
     decoded_generated_texts = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
     all_bleu_score = []
     all_em_score = []
-
 
     for ref, gen in zip(decoded_references, decoded_generated_texts):
         bleu_score = calculate_bleu_score([ref], [gen])
