@@ -36,7 +36,6 @@ def seq2seq_training_ars(args):
         remove_unused_columns=False,
         metric_for_best_model="bleu_score",
         greater_is_better=True,
-        label_names=["labels"]
     )
     return training_args
 
@@ -60,7 +59,6 @@ def deep_type(obj):
 def compute_metrics(eval_pred, tokenizer):
     predictions, labels = eval_pred
 
-    predictions = predictions[0].tolist()
     # print(predictions)
     # raise SystemExit()
 
