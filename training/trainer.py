@@ -41,10 +41,10 @@ def seq2seq_training_ars(args):
     return training_args
 
 def compute_metrics(eval_pred, tokenizer):
-    references, generated_texts = eval_pred
+    predictions, labels = eval_pred
 
-    decoded_references = tokenizer.batch_decode(references, skip_special_tokens=True)
-    decoded_generated_texts = tokenizer.batch_decode(generated_texts, skip_special_tokens=True)
+    decoded_references = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+    decoded_generated_texts = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
     all_bleu_score = []
     all_em_score = []
