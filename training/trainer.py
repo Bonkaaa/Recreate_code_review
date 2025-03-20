@@ -36,7 +36,6 @@ def seq2seq_training_ars(args):
         remove_unused_columns=False,
         metric_for_best_model="bleu_score",
         greater_is_better=True,
-        label_names=["labels"]
     )
     return training_args
 
@@ -115,8 +114,6 @@ def main(args):
         logging.debug(tokenizer)
 
     data_collator = DataCollatorWithPadding(tokenizer, max_length=args.block_size)
-    print(batch.keys())
-    raise SystemExit()
 
     # Load data
     train_data = load_jsonl(args.train_data_file)[:5]
