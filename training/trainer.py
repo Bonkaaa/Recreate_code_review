@@ -43,8 +43,8 @@ def seq2seq_training_ars(args):
 def compute_metrics(eval_pred, tokenizer):
     predictions, labels = eval_pred
 
-    print("Predictions:", type(predictions), predictions.shape)  # Check type & shape
-    print("Labels:", type(labels), labels.shape)  # Check type & shape
+    print("Predictions:", type(predictions), len(predictions))  # Check type & shape
+    print("Labels:", type(labels), len(labels))  # Check type & shape
     raise SystemExit()
 
     decoded_references = tokenizer.batch_decode(predictions, skip_special_tokens=True)
