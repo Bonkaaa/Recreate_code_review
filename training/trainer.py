@@ -68,7 +68,7 @@ def compute_metrics(eval_pred, tokenizer):
         "em_score": avg_em_score
     }
 
-def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator):
+def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer):
     trainer = CustomSeq2SeqTrainer(
         model=model,
         args=training_args,
