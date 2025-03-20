@@ -59,11 +59,12 @@ def deep_type(obj):
 
 def compute_metrics(eval_pred, tokenizer):
     predictions, labels = eval_pred
-    predictions = predictions[0].tolist()
-    print(predictions)
-    raise SystemExit()
 
-    decoded_references = tokenizer.batch_decode(predictions[0], skip_special_tokens=True)
+    predictions = predictions[0].tolist()
+    # print(predictions)
+    # raise SystemExit()
+
+    decoded_references = tokenizer.batch_decode(predictions, skip_special_tokens=True)
     decoded_generated_texts = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
     all_bleu_score = []
