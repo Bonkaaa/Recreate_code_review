@@ -99,7 +99,7 @@ def main(args):
     if accelerator.is_main_process:
         logging.debug(tokenizer)
 
-    data_collator = DataCollatorWithPadding(tokenizer, model=model, max_length=args.block_size, return_tensors="pt")
+    data_collator = DataCollatorWithPadding(tokenizer, max_length=args.block_size)
 
     # Load data
     train_data = load_jsonl(args.train_data_file)[:5]
