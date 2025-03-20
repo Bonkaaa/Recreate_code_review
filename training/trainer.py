@@ -102,8 +102,8 @@ def main(args):
     data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, max_length=args.block_size)
 
     # Load data
-    train_data = load_jsonl(args.train_data_file)[:20]
-    eval_data = load_jsonl(args.eval_data_file)[:20]
+    train_data = load_jsonl(args.train_data_file)[:5]
+    eval_data = load_jsonl(args.eval_data_file)[:5]
 
     if accelerator.is_main_process:
         logging.info(f"Total train data: {len(train_data)}")
