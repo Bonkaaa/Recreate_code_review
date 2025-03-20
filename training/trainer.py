@@ -99,7 +99,7 @@ def main(args):
     if accelerator.is_main_process:
         logging.debug(tokenizer)
 
-    data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, max_length=args.block_size)
+    data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, max_length=args.block_size, return_tensors="pt")
 
     # Load data
     train_data = load_jsonl(args.train_data_file)[:5]
