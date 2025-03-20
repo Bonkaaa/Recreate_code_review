@@ -8,6 +8,7 @@ from utils import *
 from accelerate import Accelerator
 from dataset import dataset_loader
 from CustomSeq2SeqTrainer import CustomSeq2SeqTrainer
+from transformers import DataCollatorForSeq2Seq
 
 def seq2seq_training_ars(args):
     training_args = Seq2SeqTrainingArguments(
@@ -33,6 +34,9 @@ def seq2seq_training_ars(args):
         logging_strategy="steps",
         logging_steps=args.logging_steps,
         remove_unused_columns=False,
+        metric_for_best_model="bleu_score",
+        greater_is_better=True,
+        label_names=["labels"]
     )
     return training_args
 
@@ -48,7 +52,7 @@ def compute_metrics(pred, tokenizer):
 
     for ref, gen in zip(decoded_references, decoded_generated_texts):
         bleu_score = calculate_bleu_score([ref], [gen])
-        em_score = calculate_exact_match_score([ref], [gen])['exact_match']
+        em_score = calculate_exact_match_score([ref], [gen])
         all_bleu_score.append(bleu_score)
         all_em_score.append(em_score)
 
@@ -60,14 +64,15 @@ def compute_metrics(pred, tokenizer):
         "em_score": avg_em_score
     }
 
-def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer):
+def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator):
     trainer = CustomSeq2SeqTrainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
-        compute_metrics=partial(compute_metrics, tokenizer=tokenizer)
+        compute_metrics=partial(compute_metrics, tokenizer=tokenizer),
+        data_collator= data_collator
     )
     return trainer
 
@@ -89,6 +94,8 @@ def main(args):
 
     if accelerator.is_main_process:
         logging.debug(tokenizer)
+
+    data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, max_length=args.block_size)
 
     # Load data
     train_data = load_jsonl(args.train_data_file)[:20]
