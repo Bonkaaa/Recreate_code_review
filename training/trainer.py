@@ -112,7 +112,7 @@ def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tok
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
-        compute_metrics=partial(compute_metrics, tokenizer=tokenizer),
+        compute_metrics=compute_metrics,
         data_collator=data_collator
     )
     return trainer
