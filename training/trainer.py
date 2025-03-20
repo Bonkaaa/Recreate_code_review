@@ -113,7 +113,8 @@ def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tok
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
         compute_metrics=compute_metrics,
-        data_collator=data_collator
+        data_collator=data_collator,
+        preprocess_logits_for_metrics = (lambda logits, labels: logits[0].argmax(dim=-1))
     )
     return trainer
 
@@ -161,7 +162,7 @@ def main(args):
     train_results = trainer.train()
 
     # Evaluate the model
-    eval_results = trainer.evaluate()
+    eval_results = trainer.evaluate(eval_dataset=eval_dataset, metric_key_prefix="eval")
 
     return train_results, eval_results
 
