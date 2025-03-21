@@ -90,7 +90,7 @@ def compute_metrics(eval_pred):
 
     # Calculate exact match score
     exact_match_metric = load("exact_match")
-    exact_match_score = exact_match_metric.compute(predictions=decoded_preds, references=[[label] for label in decoded_labels], ignore_case=True)
+    exact_match_score = exact_match_metric.compute(predictions=decoded_preds, references=decoded_labels, ignore_case=True)
 
     return {
         "bleu_score": bleu_score['bleu_score'],
