@@ -145,6 +145,9 @@ def main(args):
     # Prepare accelerator
     model = accelerator.prepare(model)
 
+    if accelerator.is_main_process:
+        logging.info("***** Model Loaded *****")
+
     # Load the training arguments
     training_args = seq2seq_training_ars(args)
 
@@ -154,10 +157,16 @@ def main(args):
     # Train the model
     train_results = trainer.train()
 
+    if accelerator.is_main_process:
+        logging.info("***** Training Finished *****")
+
     # Evaluate the model
     eval_results = trainer.evaluate(eval_dataset=eval_dataset, metric_key_prefix="eval")
 
-    return train_results, eval_results
+    if accelerator.is_main_process:
+        logging.info("***** Evaluation Finished *****")
+
+    return {"train_results": train_results, "eval_results": eval_results}
 
 if __name__ == "__main__":
     args = args_parse()
