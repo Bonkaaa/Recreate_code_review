@@ -11,5 +11,6 @@ class CustomSeq2SeqTrainer(Trainer):
 
     def _issue_warnings_after_load(self, load_result):
         """Override to unwrap model after loading."""
-        if isinstance(self.model._key_to_ignore_on_save, torch.nn.parallel.DistributedDataParallel):
-            self.model._key_to_ignore_on_save = self.model._key_to_ignore_on_save.module
+        if isinstance(self.model, torch.nn.parallel.DistributedDataParallel):
+            self.model = self.model.module  # Unwrap model after loading
+
