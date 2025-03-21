@@ -10,6 +10,7 @@ from dataset import dataset_loader
 from CustomSeq2SeqTrainer import CustomSeq2SeqTrainer
 from transformers import DataCollatorWithPadding
 from bleu_score.bleu import Bleu
+from evaluate import load
 
 # Initialize the tokenizer
 args = args_parse()
@@ -46,23 +47,6 @@ def seq2seq_training_ars(args):
         label_names=["labels"],
     )
     return training_args
-
-def deep_type(obj):
-    """Recursively get the deep type of a variable."""
-    if isinstance(obj, list):
-        if not obj:  # Empty list case
-            return "list[?]"
-        return f"list[{deep_type(obj[0])}]"  # Check the type of the first element
-    elif isinstance(obj, tuple):
-        if not obj:
-            return "tuple[?]"
-        return f"tuple[{', '.join(deep_type(item) for item in obj)}]"
-    elif isinstance(obj, np.ndarray):
-        return f"numpy.ndarray[{obj.dtype}]"
-    elif isinstance(obj, torch.Tensor):
-        return f"torch.Tensor[{obj.dtype}]"
-    else:
-        return str(type(obj).__name__)  # Return the simple type name
 
 # def compute_metrics(eval_pred, tokenizer):
 #     predictions, labels = eval_pred
@@ -104,7 +88,15 @@ def compute_metrics(eval_pred):
                                 max_order=4
                             )
 
-    return bleu_score
+    # Calculate exact match score
+    exact_match_metric = load("exact_match")
+    exact_match_score = exact_match_metric.compute(predictions=decoded_preds, references=[[label] for label in decoded_labels], ignore_case=True)
+
+    return {
+        "bleu_score": bleu_score['bleu_score'],
+        "exact_match": exact_match_score['exact_match']
+    }
+
 
 def seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator):
     trainer = CustomSeq2SeqTrainer(
