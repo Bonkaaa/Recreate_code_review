@@ -170,7 +170,9 @@ def main(args):
 
 if __name__ == "__main__":
     args = args_parse()
-    main(args)
+    train_results, eval_results = main(args)
+    print(f"Train results: {train_results}")
+    print(f"Eval results: {eval_results}")
 
 
 
