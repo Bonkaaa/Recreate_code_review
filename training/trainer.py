@@ -170,9 +170,13 @@ def main(args):
 
 if __name__ == "__main__":
     args = args_parse()
-    train_results, eval_results = main(args)
-    print(f"Train results: {train_results}")
-    print(f"Eval results: {eval_results}")
+    results  = main(args)
+    accelerator = Accelerator()
+    # Print results
+    if accelerator.is_main_process:
+        logging.info(f"Eval results: {results['eval_results']}")
+        logging.info(f"Train results: {results['train_results']}")
+
 
 
 
