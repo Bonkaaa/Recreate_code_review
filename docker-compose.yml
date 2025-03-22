@@ -1,0 +1,17 @@
+services:
+  cr:
+    build: .
+    container_name: cr-container
+    image: cr:latest
+    volumes:
+      - .:/app  # Mount current directory to /app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all  # Access all GPUs, or use a number like 1
+              capabilities: [gpu]
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    
