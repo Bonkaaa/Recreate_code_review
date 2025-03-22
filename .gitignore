@@ -4,3 +4,5 @@ logs
 tokenized_dataset
 wandb
 .idea
+outputs
+*data*

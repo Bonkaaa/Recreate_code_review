@@ -1,6 +1,6 @@
 #!/bin/bash
 PROJECT="Code_review_generation"
-DataDir="/raid/data/dmtran/t5_data"
+DataDir="../t5_data"
 
 # TYPE='roberta'
 # MODEL='microsoft/codebert-base'
@@ -22,7 +22,7 @@ OUTPUT_DIR=./outputs/codet5
 # TOKENIZER='microsoft/unixcoder-base'
 # OUTPUT_DIR=./outputs/unixcoder
 
-CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch trainer.py \
+CUDA_VISIBLE_DEVICES=1,5 accelerate launch trainer.py \
     --project ${PROJECT} \
     --model_dir ${MODEL} \
     --output_dir=${OUTPUT_DIR} \
