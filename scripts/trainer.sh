@@ -31,7 +31,7 @@ CUDA_VISIBLE_DEVICES=1,5 accelerate launch trainer.py \
     --model_name_or_path=${MODEL} \
     --train_data_file=${DataDir}"/train.jsonl" \
     --eval_data_file=${DataDir}"/val.jsonl" \
-    --epoch 10 \
+    --num_train_epochs 5 \
     --do_eval \
     --block_size 256 \
     --train_batch_size 64 \
@@ -39,4 +39,5 @@ CUDA_VISIBLE_DEVICES=1,5 accelerate launch trainer.py \
     --learning_rate 2e-5 \
     --warmup_steps 1000 \
     --max_grad_norm 1.0 \
-    --wandb_name ${MODEL}
+    --wandb_name ${MODEL} \
+    --num_proc 4
