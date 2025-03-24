@@ -45,6 +45,7 @@ def seq2seq_training_ars(args):
         # metric_for_best_model="bleu_score",
         # greater_is_better=True,
         label_names=["labels"],
+        do_train=True,
     )
     return training_args
 
@@ -150,12 +151,12 @@ def main(args):
 
     # Load the training arguments
     training_args = seq2seq_training_ars(args)
-    print(training_args)
-    raise SystemExit()
 
     # Load the trainer
     trainer = seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator)
-
+    print(trainer.state.global_step)
+    print(trainer.state.max_steps)
+    raise SystemExit()
     # Train the model
     train_results = trainer.train()
 
