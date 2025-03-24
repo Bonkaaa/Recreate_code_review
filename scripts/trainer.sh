@@ -1,6 +1,6 @@
 #!/bin/bash
 PROJECT="Code_review_generation"
-DataDir="../t5_data"
+DataDir="/kaggle/input/100-datapoint/data"
 
 # TYPE='roberta'
 # MODEL='microsoft/codebert-base'
