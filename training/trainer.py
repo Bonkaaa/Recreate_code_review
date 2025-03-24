@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
 from args_parse import main as args_parse
 from metrics import calculate_bleu_score, calculate_exact_match_score
@@ -166,6 +167,12 @@ def main(args):
 
     if accelerator.is_main_process:
         logging.info("***** Evaluation Finished *****")
+
+    best_model_dir = os.path.join(training_args.output_dir, "best_model_checkpoint")
+    model.save_pretrained(best_model_dir)
+    tokenizer.save_pretrained(best_model_dir)
+    if accelerator.is_main_process:
+        logging.info(f"Best model saved to {best_model_dir}")
 
     return {"train_results": train_results, "eval_results": eval_results}
 
