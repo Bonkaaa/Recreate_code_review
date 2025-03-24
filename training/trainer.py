@@ -150,6 +150,8 @@ def main(args):
 
     # Load the training arguments
     training_args = seq2seq_training_ars(args)
+    print(training_args)
+    raise SystemExit()
 
     # Load the trainer
     trainer = seq2seq_trainer(args, model, training_args, train_dataset, eval_dataset, tokenizer, data_collator)
