@@ -135,8 +135,8 @@ def main(args):
     data_collator = DataCollatorWithPadding(tokenizer, max_length=args.block_size)
 
     # Load data
-    train_data = load_jsonl(args.train_data_file)
-    eval_data = load_jsonl(args.eval_data_file)
+    train_data = load_jsonl(args.train_data_file)[:20]
+    eval_data = load_jsonl(args.eval_data_file)[:20]
 
     if accelerator.is_main_process:
         logging.info(f"Total train data: {len(train_data)}")
@@ -168,9 +168,12 @@ def main(args):
     if accelerator.is_main_process:
         logging.info("***** Evaluation Finished *****")
 
+    # Save the best model
     best_model_dir = os.path.join(training_args.output_dir, "best_model_checkpoint")
-    model.module.save_pretrained(best_model_dir)
+    model = accelerator.unwrap_model(model)
+    model.save_pretrained(best_model_dir)
     tokenizer.save_pretrained(best_model_dir)
+
     if accelerator.is_main_process:
         logging.info(f"Best model saved to {best_model_dir}")
 
