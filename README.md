@@ -1,11 +1,11 @@
 # **Recreate Code Review (LLM Fine-Tuning with LoRA & QLoRA)**
 
-This project focuses on fine-tuning the CodeT5 model for **Automated Code Review** tasks, and analyzing the performance differences between _LoRA_ and _QLoRA_ fine-tuning methods. 
+This project focuses on fine-tuning the CodeT5 model for **Automated Code Review** tasks, and analyzing the performance differences between _LoRA_ and _QLoRA_ fine-tuning methods.<br>
 It also includes a custom _Trainer (HuggingFace)_ implementation to validate results and compare against _LoRA_ and _QLoRA_ techniques.
 
 ### 📂 Repository Structure
 
-`Recreate_code_review/
+```Recreate_code_review/
 │
 ├── scripts/                # Shell scripts for running experiments
 │   ├── args-parse.sh       # Parses CLI arguments for training
@@ -24,7 +24,8 @@ It also includes a custom _Trainer (HuggingFace)_ implementation to validate res
 │   ├── lora_config.py      # (LoRA branch) LoRA configuration
 │   ├── bnb_config.py       # (QLoRA branch) QLoRA configuration
 │   ├── customseq2Seq_trainer.py # (Trainer branch) Custom Seq2Seq Trainer
-│   └── trainer.py          # (Trainer branch) Custom training loop`
+│   └── trainer.py          # (Trainer branch) Custom training loop
+```
 
 ### 🌿 Branch Overview
 
@@ -35,33 +36,34 @@ It also includes a custom _Trainer (HuggingFace)_ implementation to validate res
 
 ### ⚙️ Installation
 
-`# Clone the repository
+```# Clone the repository
 git clone https://github.com/Bonkaaa/Recreate_code_review.git
 cd Recreate_code_review
 
 # Install Python dependencies
-pip install -r requirements.txt`
+pip install -r requirements.txt
+```
 
 _You may also need bitsandbytes, transformers, and peft for QLoRA and LoRA runs._
 
 ### 🚀 Usage
 
 #### ⚠ Note:
-The dataset used for fine-tuning is too large to be included in this repository.
+The dataset used for fine-tuning is too large to be included in this repository.<br>
 You will need to download or prepare your own dataset before running the scripts.
 
 ### 📊Experiment
 
 This project compares the result implemented in **Automated Code Review**:
 
-* _LoRA_ fine-tuning
-* _QLoRA_ fine-tuning
-* Custom _Trainer_ fine-tuning
+* `LoRA` fine-tuning
+* `QLoRA` fine-tuning
+* Custom `Trainer` fine-tuning
 
-Metrics such as BLEU, Exact Match are computed in training/metrics.py.
+Metrics such as BLEU, Exact Match are computed in `training/metrics.py`.
 
-[Link to Research Paper](https://www.linkedin.com/posts/bonkaaa_lora-and-qlora-in-automated-code-review-activity-7324740857297829888-lnnG?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAFDP6O4Bsy0Aj2p-zAGG76OYuJHB587GrWg)
+[Link to Research Experiment](https://www.linkedin.com/posts/bonkaaa_lora-and-qlora-in-automated-code-review-activity-7324740857297829888-lnnG?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAFDP6O4Bsy0Aj2p-zAGG76OYuJHB587GrWg)
 
-📝 Notes
-_LoRA_ and _QLoRA_ configs are branch-specific.
-The Trainer branch serves as a baseline for evaluating the efficiency and validity of LoRA and QLoRA results.
+### 📝 Notes
+`LoRA` and `QLoRA` configs are branch-specific.<br>
+The `Trainer` branch serves as a baseline for evaluating the efficiency and validity of LoRA and QLoRA results.
